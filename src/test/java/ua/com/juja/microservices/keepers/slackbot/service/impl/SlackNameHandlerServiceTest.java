@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @author
  */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class SlackNameHandlerServiceTest {

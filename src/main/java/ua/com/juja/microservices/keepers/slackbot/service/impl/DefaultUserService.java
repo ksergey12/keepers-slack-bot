@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * @author
  */
+
 @Service
 public class DefaultUserService implements UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
