@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author Nikolay Horushko
  */
-
 @SpringBootApplication
 public class KeeperSlackBotApplication {
 

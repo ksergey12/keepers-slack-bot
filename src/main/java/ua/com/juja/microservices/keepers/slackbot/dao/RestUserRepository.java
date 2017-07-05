@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * @author
  */
-
 @Repository
 public class RestUserRepository implements UserRepository{
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public List<UserDTO> findUsersBySlackNames(List<String> slackNames) {
         //todo task #7

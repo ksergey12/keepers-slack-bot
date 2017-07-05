@@ -10,7 +10,6 @@ import javax.inject.Inject;
 /**
  * @author
  */
-
 @Service
 public class SlackNameHandlerService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
