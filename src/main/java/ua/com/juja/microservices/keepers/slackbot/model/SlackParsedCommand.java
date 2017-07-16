@@ -70,7 +70,7 @@ public class SlackParsedCommand {
         return result;
     }
 
-    public void checkSlackNamesPresence() {
+    private void checkSlackNamesPresence() {
         if (userCount == 0) {
             logger.warn("The text: [{}] doesn't contain slack name.");
             throw new WrongCommandFormatException(String.format("The text '%s' doesn't contains slackName", text));
