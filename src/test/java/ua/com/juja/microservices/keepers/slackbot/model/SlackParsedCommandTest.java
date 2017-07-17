@@ -100,4 +100,14 @@ public class SlackParsedCommandTest {
         assertEquals(1, slackParsedCommand1.getUserCount());
         assertEquals(3, slackParsedCommand2.getUserCount());
     }
+
+    @Test
+    public void getTextWithoutSlackNames() {
+        //given
+        String text = "   @slack text  @slack text @slack ";
+        //when
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        //then
+        assertEquals("text text", slackParsedCommand.getTextWithoutSlackNames());
+    }
 }

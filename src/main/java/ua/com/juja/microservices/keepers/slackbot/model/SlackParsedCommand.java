@@ -51,6 +51,12 @@ public class SlackParsedCommand {
         return firstUser;
     }
 
+    public String getTextWithoutSlackNames(){
+        String result = text.replaceAll(SLACK_NAME_PATTERN, "");
+        result = result.replaceAll("\\s+"," ").trim();
+        return result;
+    }
+
     public UserDTO receiveFromUser() {
         return users.get(fromSlackName);
     }
