@@ -14,42 +14,45 @@ import java.util.regex.Pattern;
 public class SlackParsedCommand {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final String SLACK_NAME_PATTERN = "@([a-zA-z0-9\\.\\_\\-]){1,21}";
-    private String from;
+    private String fromSlackName;
     private String text;
     private Map<String, UserDTO> users;
-    private List<String> slackNames;
+    private List<String> slackNamesInText;
     private int userCount;
 
-    public SlackParsedCommand(String from, String text, Map<String, UserDTO> users) {
-        if (!from.startsWith("@")) {
-            logger.debug("add '@' to slack name [{}]", from);
-            from = "@" + from;
+    public SlackParsedCommand(String fromSlackName, String text, Map<String, UserDTO> users) {
+        if (!fromSlackName.startsWith("@")) {
+            logger.debug("add '@' to slack name [{}]", fromSlackName);
+            fromSlackName = "@" + fromSlackName;
         }
-        this.from = from;
+        this.fromSlackName = fromSlackName;
         this.text = text;
         this.users = users;
-        slackNames = receiveSlackNames();
-        userCount = slackNames.size();
+        slackNamesInText = receiveSlackNames();
+        userCount = slackNamesInText.size();
+        logger.debug("SlackParsedCommand created with parameters: " +
+                "fromSlackName: {} text: {} slackNamesInText in the text {} users: {}",
+                fromSlackName, text, slackNamesInText.toString(), users.toString());
     }
 
     public List<UserDTO> receiveAllUsers() {
         checkSlackNamesPresence();
         Map<String, UserDTO> usersCopy = new HashMap<>();
         usersCopy.putAll(users);
-        usersCopy.remove(from);
-        logger.debug("Found {} users in text: [{}]", userCount, text);
+        usersCopy.remove(fromSlackName);
+        logger.debug("Found users {} in text: [{}]", users.toString(), text);
         return new LinkedList(usersCopy.values());
     }
 
     public UserDTO receiveFirstUser() {
         checkSlackNamesPresence();
-        UserDTO firstUser = users.get(slackNames.get(0));
+        UserDTO firstUser = users.get(slackNamesInText.get(0));
         logger.debug("Found user: {} in text: [{}]", firstUser.toString(), text);
         return firstUser;
     }
 
     public UserDTO receiveFromUser() {
-        return users.get(from);
+        return users.get(fromSlackName);
     }
 
     public String getText() {
@@ -73,7 +76,7 @@ public class SlackParsedCommand {
     private void checkSlackNamesPresence() {
         if (userCount == 0) {
             logger.warn("The text: [{}] doesn't contain slack name.");
-            throw new WrongCommandFormatException(String.format("The text '%s' doesn't contains slackName", text));
+            throw new WrongCommandFormatException(String.format("The text '%s' doesn't contain any slackName", text));
         }
     }
 }

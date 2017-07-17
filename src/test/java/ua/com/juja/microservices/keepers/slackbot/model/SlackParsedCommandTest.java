@@ -49,7 +49,7 @@ public class SlackParsedCommandTest {
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
         //then
         thrown.expect(WrongCommandFormatException.class);
-        thrown.expectMessage(containsString("The text 'text text text' doesn't contains slackName"));
+        thrown.expectMessage(containsString("The text 'text text text' doesn't contain any slackName"));
         //when
         slackParsedCommand.receiveFirstUser();
     }
@@ -57,7 +57,7 @@ public class SlackParsedCommandTest {
     @Test
     public void getAllUsers() {
         //given
-        String text = "text @slack2 text@slack1 text @slack3";
+        String text = "text @slack2 text@slack1 text";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
         //when
         List<UserDTO> result = slackParsedCommand.receiveAllUsers();
