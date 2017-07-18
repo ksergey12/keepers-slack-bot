@@ -28,14 +28,14 @@ public class SlackParsedCommand {
         this.fromSlackName = fromSlackName;
         this.text = text;
         this.users = users;
-        slackNamesInText = receiveSlackNames();
+        slackNamesInText = getSlackNames();
         userCount = slackNamesInText.size();
         logger.debug("SlackParsedCommand created with parameters: " +
                 "fromSlackName: {} text: {} slackNamesInText in the text {} users: {}",
                 fromSlackName, text, slackNamesInText.toString(), users.toString());
     }
 
-    public List<UserDTO> receiveAllUsers() {
+    public List<UserDTO> getAllUsers() {
         checkSlackNamesPresence();
         Map<String, UserDTO> usersCopy = new HashMap<>();
         usersCopy.putAll(users);
@@ -44,7 +44,7 @@ public class SlackParsedCommand {
         return new LinkedList(usersCopy.values());
     }
 
-    public UserDTO receiveFirstUser() {
+    public UserDTO getFirstUser() {
         checkSlackNamesPresence();
         UserDTO firstUser = users.get(slackNamesInText.get(0));
         logger.debug("Found user: {} in text: [{}]", firstUser.toString(), text);
@@ -57,7 +57,7 @@ public class SlackParsedCommand {
         return result;
     }
 
-    public UserDTO receiveFromUser() {
+    public UserDTO getFromUser() {
         return users.get(fromSlackName);
     }
 
@@ -69,7 +69,7 @@ public class SlackParsedCommand {
         return userCount;
     }
 
-    private List<String> receiveSlackNames() {
+    private List<String> getSlackNames() {
         List<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(SLACK_NAME_PATTERN);
         Matcher matcher = pattern.matcher(text);
