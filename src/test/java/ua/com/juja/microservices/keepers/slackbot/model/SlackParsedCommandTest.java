@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import ua.com.juja.microservices.keepers.slackbot.exceptions.WrongCommandFormatException;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ public class SlackParsedCommandTest {
         String text = "text text @slack1 text";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
         //when
-        UserDTO result = slackParsedCommand.receiveFirstUser();
+        UserDTO result = slackParsedCommand.getFirstUser();
         //then
         assertEquals("UserDTO(uuid=uuid1, slack=@slack1)", result.toString());
     }
@@ -51,7 +50,7 @@ public class SlackParsedCommandTest {
         thrown.expect(WrongCommandFormatException.class);
         thrown.expectMessage(containsString("The text 'text text text' doesn't contain any slackName"));
         //when
-        slackParsedCommand.receiveFirstUser();
+        slackParsedCommand.getFirstUser();
     }
 
     @Test
@@ -60,7 +59,7 @@ public class SlackParsedCommandTest {
         String text = "text @slack2 text@slack1 text";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
         //when
-        List<UserDTO> result = slackParsedCommand.receiveAllUsers();
+        List<UserDTO> result = slackParsedCommand.getAllUsers();
         //then
         assertEquals("[UserDTO(uuid=uuid2, slack=@slack2), UserDTO(uuid=uuid1, slack=@slack1)]",
                 result.toString());
@@ -83,7 +82,7 @@ public class SlackParsedCommandTest {
         String text = "text";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand("from", text, users);
         //when
-        UserDTO result = slackParsedCommand.receiveFromUser();
+        UserDTO result = slackParsedCommand.getFromUser();
         //then
         assertEquals("UserDTO(uuid=uuid0, slack=@from)", result.toString());
     }
