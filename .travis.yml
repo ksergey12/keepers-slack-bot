@@ -6,11 +6,13 @@ services:
   - docker
 cache:
   directories:
+    - $HOME/.m2
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 before_install:
     - chmod +x gradlew
 before_script:
-    - ./gradlew assemble
+  - sleep 15
 script:
-    - ./gradlew test
+  - ./gradlew test
+
