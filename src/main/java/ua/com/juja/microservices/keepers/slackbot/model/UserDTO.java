@@ -8,7 +8,6 @@ import lombok.ToString;
 /**
  * @author Nikolay Horushko
  */
-
 @Getter
 @AllArgsConstructor
 @ToString
