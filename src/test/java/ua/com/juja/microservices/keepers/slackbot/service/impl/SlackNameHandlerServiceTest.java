@@ -2,7 +2,6 @@ package ua.com.juja.microservices.keepers.slackbot.service.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,9 +49,8 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals("SlackParsedCommand(fromSlackName=@slackFrom, text=text @slack1 TexT text., " +
-                "slackNamesInText=[@slack1], userCountInText=1, " +
-                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                "@slack1=UserDTO(uuid=AAA111, slack=@slack1)})", slackParsedCommand.toString());
+                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom), @slack1=UserDTO(uuid=AAA111, " +
+                "slack=@slack1)}, slackNamesInText=[@slack1], userCount=1)", slackParsedCommand.toString());
     }
 
     @Test
@@ -66,9 +64,9 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals("SlackParsedCommand(fromSlackName=@slackFrom, text=text @slack1 TexT @slack2 text., " +
-                "slackNamesInText=[@slack1, @slack2], userCountInText=2, " +
-                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom), @slack2=UserDTO(uuid=AAA222, slack=@slack2), " +
-                "@slack1=UserDTO(uuid=AAA111, slack=@slack1)})", slackParsedCommand.toString());
+                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom), @slack2=UserDTO(uuid=AAA222, " +
+                "slack=@slack2), @slack1=UserDTO(uuid=AAA111, slack=@slack1)}, " +
+                "slackNamesInText=[@slack1, @slack2], userCount=2)", slackParsedCommand.toString());
     }
 
     @Test
@@ -82,7 +80,7 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals("SlackParsedCommand(fromSlackName=@slackFrom, text=text without slack name TexT text., " +
-                "slackNamesInText=[], userCountInText=0, " +
-                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom)})", slackParsedCommand.toString());
+                "users={@slackFrom=UserDTO(uuid=AAA000, slack=@slackFrom)}, slackNamesInText=[], userCount=0)",
+                slackParsedCommand.toString());
     }
 }
