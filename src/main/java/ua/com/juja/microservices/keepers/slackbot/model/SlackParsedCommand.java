@@ -3,7 +3,8 @@ package ua.com.juja.microservices.keepers.slackbot.model;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ua.com.juja.microservices.keepers.slackbot.exceptions.WrongCommandFormatException;
+import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
 import java.util.*;
 import java.util.regex.Matcher;

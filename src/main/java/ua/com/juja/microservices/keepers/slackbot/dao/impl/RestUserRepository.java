@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.dao;
+package ua.com.juja.microservices.keepers.slackbot.dao.impl;
 
 
 import org.slf4j.Logger;
@@ -10,10 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import ua.com.juja.microservices.keepers.slackbot.dao.UserRepository;
 import ua.com.juja.microservices.keepers.slackbot.exception.ApiError;
 import ua.com.juja.microservices.keepers.slackbot.exception.UserExchangeException;
-import ua.com.juja.microservices.keepers.slackbot.model.SlackNameRequest;
-import ua.com.juja.microservices.keepers.slackbot.model.UserDTO;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.SlackNameRequest;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
 import javax.inject.Inject;
 import java.util.Arrays;

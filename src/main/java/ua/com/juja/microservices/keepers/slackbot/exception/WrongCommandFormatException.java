@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.exceptions;
+package ua.com.juja.microservices.keepers.slackbot.exception;
 
 /**
  * @author Nikolay Horushko
