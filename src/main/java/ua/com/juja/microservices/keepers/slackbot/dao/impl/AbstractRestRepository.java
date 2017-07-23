@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.dao;
+package ua.com.juja.microservices.keepers.slackbot.dao.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;

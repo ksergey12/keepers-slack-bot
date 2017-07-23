@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.dao;
+package ua.com.juja.microservices.keepers.slackbot.dao.impl;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,7 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import ua.com.juja.microservices.keepers.slackbot.model.UserDTO;
+import ua.com.juja.microservices.keepers.slackbot.dao.UserRepository;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

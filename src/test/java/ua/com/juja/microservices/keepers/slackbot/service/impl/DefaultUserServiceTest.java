@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ua.com.juja.microservices.keepers.slackbot.dao.UserRepository;
-import ua.com.juja.microservices.keepers.slackbot.model.UserDTO;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.service.UserService;
 
 import javax.inject.Inject;

@@ -4,7 +4,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ua.com.juja.microservices.keepers.slackbot.exceptions.WrongCommandFormatException;
+import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.model;
+package ua.com.juja.microservices.keepers.slackbot.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

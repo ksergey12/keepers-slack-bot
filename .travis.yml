@@ -12,6 +12,10 @@ before_install:
     - chmod +x gradlew
 before_script:
   - sleep 15
+  - ./gradlew assemble
 script:
+  - ./gradlew check
   - ./gradlew test
+  - ./gradlew test --tests "ua.com.juja.microservices.integration.*"
+
 
