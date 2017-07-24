@@ -28,7 +28,7 @@ public class KeeperRequest {
 
     public KeeperRequest(SlackParsedCommand parsedCommand) {
         this.from = parsedCommand.getFromUser().getUuid();
-        this.uuid = parsedCommand.getFirstUser().getUuid();
+        this.uuid = parsedCommand.getAllUsers().iterator().next().getUuid();
         this.direction = parsedCommand.getTextWithoutSlackNames();
     }
 }

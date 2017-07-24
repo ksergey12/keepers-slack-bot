@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Nikolay Horushko
+ * @author Dmitriy Lyashenko
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {KeeperSlackBotApplication.class})

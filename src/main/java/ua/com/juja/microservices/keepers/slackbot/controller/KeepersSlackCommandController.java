@@ -32,7 +32,7 @@ public class KeepersSlackCommandController {
         this.slackNameHandlerService = slackNameHandlerService;
     }
 
-    @PostMapping(value = "/commands/keeper", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/commands/keeper-add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage onReceiveSlashCommandKeeperAdd(@RequestParam("token") String token,
                                                      @RequestParam("user_name") String fromUser,
                                                      @RequestParam("text") String text) {
@@ -58,7 +58,7 @@ public class KeepersSlackCommandController {
         logger.debug("Received response from Keeper service: [{}]", Arrays.toString(result));
 
         if (result.length > 0) {
-            response = "Thanks, we added a new Keeper " + slackParsedCommand.getFirstUser().getSlack()
+            response = "Thanks, we added a new Keeper " + result[0]
                     + " in direction {" + keeperRequest.getDirection() + "}";
         }
 
