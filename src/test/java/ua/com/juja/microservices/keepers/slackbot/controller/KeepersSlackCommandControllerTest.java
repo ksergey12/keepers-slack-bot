@@ -60,7 +60,7 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandDailyWhenIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
+    public void onReceiveSlashCommandKeeperAddIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
@@ -71,7 +71,7 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandDailyReturnOkRichMessage() throws Exception {
+    public void onReceiveSlashKeeperAddReturnOkRichMessage() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         Map<String, UserDTO> users = new HashMap<>();
@@ -94,7 +94,7 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandDailyShouldReturnErrorMessageIfOccurException() throws Exception {
+    public void onReceiveSlashKeeperAddShouldReturnErrorMessageIfOccurException() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         Map<String, UserDTO> users = new HashMap<>();
