@@ -46,46 +46,49 @@ public class ExceptionsHandlerTest {
     private SlackNameHandlerService slackNameHandlerService;
 
     private UserDTO userFrom;
+    private UserDTO user1;
 
     @Before
     public void setup() {
         userFrom = new UserDTO("AAA000", "@from-user");
+        user1 = new UserDTO("AAA111", "@slack1");
     }
 
     @Test
-    public void shouldHandleGamificationAPIError() throws Exception {
+    public void shouldHandleKeepersAPIError() throws Exception {
 
-        final String DAILY_COMMAND_TEXT = "daily description text";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
 
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), DAILY_COMMAND_TEXT, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT, users);
 
         ApiError apiError = new ApiError(
-                400, "GMF-F5-D2",
-                "You cannot give more than one thanks for day to one person",
-                "The reason of the exception is 'Thanks' achievement",
+                400, "KPR-F1-D4",
+                "Sorry, but you're not a keeper",
+                "Exception - KeeperAccessException",
                 "Something went wrong",
                 Collections.EMPTY_LIST
         );
 
-        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), DAILY_COMMAND_TEXT))
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT))
                 .thenReturn(slackParsedCommand);
         when(keeperService.sendKeeperAddRequest(any(KeeperRequest.class)))
                 .thenThrow(new KeeperExchangeException(apiError, new RuntimeException("exception")));
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/daily"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/daily", DAILY_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value("You cannot give more than one thanks for day to one person"));
+                .andExpect(jsonPath("$.text").value("Sorry, but you're not a keeper"));
     }
 
     @Test
     public void shouldHandleUserAPIError() throws Exception {
 
-        final String DAILY_COMMAND_TEXT = "daily description text";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
@@ -101,8 +104,8 @@ public class ExceptionsHandlerTest {
         when(slackNameHandlerService.createSlackParsedCommand(any(), any())).
                 thenThrow(new UserExchangeException(apiError, new RuntimeException("exception")));
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/daily"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/daily", DAILY_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text").value("User not found"));
@@ -111,13 +114,13 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleWrongCommandException() throws Exception {
 
-        final String COMMAND_TEXT = "@slack1 -2th @slack2 -3th @slack3";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         when(slackNameHandlerService.createSlackParsedCommand(any(String.class), any(String.class))).
                 thenThrow(new WrongCommandFormatException("Wrong command exception"));
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/codenjoy"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/daily", COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text").value("Wrong command exception"));
@@ -126,13 +129,13 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleAllOtherException() throws Exception {
 
-        final String COMMAND_TEXT = "@slack1 -2th @slack2 -3th @slack3";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
 
         when(slackNameHandlerService.createSlackParsedCommand(any(String.class), any(String.class))).
                 thenThrow(new RuntimeException("Runtime exception"));
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/codenjoy"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/daily", COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text").value("Runtime exception"));

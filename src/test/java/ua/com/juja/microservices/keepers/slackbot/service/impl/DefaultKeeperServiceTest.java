@@ -38,7 +38,7 @@ public class DefaultKeeperServiceTest {
     }
 
     @Test
-    public void shouldSaveNewDailyAndReturnNewAchievementId() {
+    public void shouldSaveKeeperAndReturnNewKeeperId() {
 
         //given
         String[] expectedKeeperId = {"100"};

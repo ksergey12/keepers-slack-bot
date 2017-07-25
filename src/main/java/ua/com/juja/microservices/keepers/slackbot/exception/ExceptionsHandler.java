@@ -34,8 +34,8 @@ public class ExceptionsHandler {
     }
 
     @ExceptionHandler(KeeperExchangeException.class)
-    public RichMessage handleGamificationExchangeException(KeeperExchangeException ex) {
-        logger.warn("GamificationExchangeException : {}", ex.detailMessage());
+    public RichMessage handleKeeperExchangeException(KeeperExchangeException ex) {
+        logger.warn("KeeperExchangeException : {}", ex.detailMessage());
         return new RichMessage(ex.getMessage());
     }
 }
