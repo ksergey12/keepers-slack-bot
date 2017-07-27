@@ -40,22 +40,26 @@ public class KeeperRequest {
                             " You can't make two Keepers on one direction.", slackParsedCommand.getUserCount(),
                     slackParsedCommand.getText()));
         }
+
         if (slackParsedCommand.getUserCount() == 0) {
             throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s'" +
                     " You must write user's slack name to make Keeper.", slackParsedCommand.getText()));
         }
+
         return slackParsedCommand.getFirstUser();
     }
 
     private String receiveToDirections(SlackParsedCommand parsedCommand){
-        if (parsedCommand.getTextWithoutSlackNames().split(" ").length > 1){
-            throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
-                            " You can make Keeper only on one direction.", parsedCommand.getTextWithoutSlackNames()));
-        }
         if (parsedCommand.getTextWithoutSlackNames().length() == 0){
             throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
                     parsedCommand.getText()));
         }
+
+        if (parsedCommand.getTextWithoutSlackNames().split(" ").length > 1){
+            throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
+                            " You can make Keeper only on one direction.", parsedCommand.getTextWithoutSlackNames()));
+        }
+
         return parsedCommand.getTextWithoutSlackNames();
     }
 }
