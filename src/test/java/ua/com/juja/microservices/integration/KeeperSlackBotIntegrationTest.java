@@ -65,6 +65,7 @@ public class KeeperSlackBotIntegrationTest {
 
     private UserDTO userFrom = new UserDTO("f2034f11-561a-4e01-bfcf-ec615c1ba61a", "@from-user");
     private UserDTO user1 = new UserDTO("f2034f22-562b-4e02-bfcf-ec615c1ba62b", "@slack1");
+    private UserDTO user2 = new UserDTO("f2034f33-563c-4e03-bfcf-ec615c1ba63c", "@slack2");
 
     @Before
     public void setup() {
@@ -88,7 +89,23 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessKeepersService(urlBase + urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper 1000 in direction {teems}";
+        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper @slack1 in direction {teems}";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnErrorMessageIfKeeperAddCommandConsistTwoOrMoreSlackNames() throws Exception {
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 @slack2 teems!";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems!' " +
+                " You can't make two Keepers on one direction.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))

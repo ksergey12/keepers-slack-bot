@@ -45,8 +45,6 @@ public class KeepersSlackCommandController {
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
         }
 
-        String response = "ERROR. Something went wrong and we didn't award the users :(";
-
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
@@ -57,8 +55,10 @@ public class KeepersSlackCommandController {
         String[] result = keeperService.sendKeeperAddRequest(keeperRequest);
         logger.debug("Received response from Keeper service: [{}]", Arrays.toString(result));
 
+        String response = "ERROR. Something went wrong and we didn't award the users :(";
+
         if (result.length > 0) {
-            response = "Thanks, we added a new Keeper " + result[0]
+            response = "Thanks, we added a new Keeper " + slackParsedCommand.getFirstUser().getSlack()
                     + " in direction {" + keeperRequest.getDirection() + "}";
         }
 

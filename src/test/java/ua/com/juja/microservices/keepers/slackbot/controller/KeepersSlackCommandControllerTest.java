@@ -71,7 +71,7 @@ public class KeepersSlackCommandControllerTest {
 
     @Test
     public void onReceiveSlashKeeperAddReturnOkRichMessage() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
@@ -89,12 +89,12 @@ public class KeepersSlackCommandControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                .value("Thanks, we added a new Keeper 1000 in direction {teems}"));
+                .value("Thanks, we added a new Keeper @slack1 in direction {teems}"));
     }
 
     @Test
     public void onReceiveSlashKeeperAddShouldReturnErrorMessageIfOccurException() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);

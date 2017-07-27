@@ -57,7 +57,7 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleKeepersAPIError() throws Exception {
 
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
