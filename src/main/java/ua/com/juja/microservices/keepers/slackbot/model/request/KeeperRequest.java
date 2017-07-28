@@ -35,13 +35,16 @@ public class KeeperRequest {
     }
 
     private UserDTO receiveToUser(SlackParsedCommand slackParsedCommand) {
-        if (slackParsedCommand.getUserCount() > 1) {
+
+        int userCount = slackParsedCommand.getUserCount();
+
+        if (userCount > 1) {
             throw new WrongCommandFormatException(String.format("We found %d slack names in your command: '%s' " +
                             " You can't make two Keepers on one direction.", slackParsedCommand.getUserCount(),
                     slackParsedCommand.getText()));
         }
 
-        if (slackParsedCommand.getUserCount() == 0) {
+        if (userCount == 0) {
             throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s'" +
                     " You must write user's slack name to make Keeper.", slackParsedCommand.getText()));
         }
@@ -50,12 +53,15 @@ public class KeeperRequest {
     }
 
     private String receiveToDirections(SlackParsedCommand parsedCommand){
-        if (parsedCommand.getTextWithoutSlackNames().length() == 0){
+
+        String textWithoutSlackNames = parsedCommand.getTextWithoutSlackNames();
+
+        if (textWithoutSlackNames.length() == 0){
             throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
                     parsedCommand.getText()));
         }
 
-        if (parsedCommand.getTextWithoutSlackNames().split(" ").length > 1){
+        if (textWithoutSlackNames.split(" ").length > 1){
             throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
                             " You can make Keeper only on one direction.", parsedCommand.getTextWithoutSlackNames()));
         }

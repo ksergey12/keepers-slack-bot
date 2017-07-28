@@ -89,7 +89,7 @@ public class KeepersSlackCommandControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                .value("Thanks, we added a new Keeper @slack1 in direction {teems}"));
+                .value("Thanks, we added a new Keeper: @slack1 in direction: teems"));
     }
 
     @Test

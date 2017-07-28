@@ -52,7 +52,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
         } catch (HttpClientErrorException ex) {
             ApiError error = convertToApiError(ex);
             logger.warn("Keepers service returned an error: [{}]", error);
-            throw new KeeperExchangeException(convertToApiError(ex), ex);
+            throw new KeeperExchangeException(error, ex);
         }
 
         logger.info("Saved Keeper: [{}]", Arrays.toString(result));

@@ -50,16 +50,14 @@ public class KeepersSlackCommandController {
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
-        logger.debug("Sent keeper request to Keeper service. KeeperRequest: [{}]",
-                keeperRequest.toString());
         String[] result = keeperService.sendKeeperAddRequest(keeperRequest);
         logger.debug("Received response from Keeper service: [{}]", Arrays.toString(result));
 
-        String response = "ERROR. Something went wrong and we didn't award the users :(";
+        String response = "ERROR. Something went wrong. Keeper wos not created :(";
 
         if (result.length > 0) {
-            response = "Thanks, we added a new Keeper " + slackParsedCommand.getFirstUser().getSlack()
-                    + " in direction {" + keeperRequest.getDirection() + "}";
+            response = String.format("Thanks, we added a new Keeper: %s in direction: %s",
+                    slackParsedCommand.getFirstUser().getSlack(), keeperRequest.getDirection());
         }
 
         logger.info("Keeper command processed : user: [{}] text: [{}] and sent response into slack: [{}]",

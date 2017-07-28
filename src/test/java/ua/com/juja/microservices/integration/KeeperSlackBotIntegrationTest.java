@@ -89,7 +89,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessKeepersService(urlBase + urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper @slack1 in direction {teems}";
+        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
