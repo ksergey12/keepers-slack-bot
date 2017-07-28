@@ -26,8 +26,6 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
     private RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${keepers.baseURL}")
-    private String urlBase;
     @Value("${endpoint.addKeeper}")
     private String urlAddKeeper;
 
@@ -45,7 +43,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
-            ResponseEntity<String[]> response = restTemplate.exchange(urlBase + urlAddKeeper,
+            ResponseEntity<String[]> response = restTemplate.exchange(urlAddKeeper,
                     HttpMethod.POST, request, String[].class);
             result = response.getBody();
             logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());

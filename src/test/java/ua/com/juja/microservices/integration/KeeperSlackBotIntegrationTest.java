@@ -53,8 +53,6 @@ public class KeeperSlackBotIntegrationTest {
     private MockMvc mvc;
     private MockRestServiceServer mockServer;
 
-    @Value("${keepers.baseURL}")
-    private String urlBase;
     @Value("${endpoint.addKeeper}")
     private String urlAddKeeper;
 
@@ -86,7 +84,7 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
-        mockSuccessKeepersService(urlBase + urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS,
+        mockSuccessKeepersService(urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
@@ -172,7 +170,7 @@ public class KeeperSlackBotIntegrationTest {
                 "\"direction\":\"teems\"" +
                 "}";
 
-        mockFailKeepersService(urlBase + urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS);
+        mockFailKeepersService(urlAddKeeper, EXPECTED_REQUEST_TO_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
 
