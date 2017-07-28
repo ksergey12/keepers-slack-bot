@@ -1,6 +1,5 @@
 package ua.com.juja.microservices.keepers.slackbot.model.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,11 +14,8 @@ import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 @ToString
 public class KeeperRequest {
 
-    @JsonProperty("from")
     private String from;
-    @JsonProperty("uuid")
     private String uuid;
-    @JsonProperty("direction")
     private String direction;
 
     public KeeperRequest(String from, String uuid, String direction) {
