@@ -103,7 +103,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
-                " You can't make two Keepers on one direction.";
+                " You can't make more than one Keepers on one direction.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -119,7 +119,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else'  " +
-                "You can make Keeper only on one direction.";
+                "You can make Keeper on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))

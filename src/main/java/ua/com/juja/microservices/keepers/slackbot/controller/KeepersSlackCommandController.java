@@ -53,7 +53,7 @@ public class KeepersSlackCommandController {
         String[] result = keeperService.sendKeeperAddRequest(keeperRequest);
         logger.debug("Received response from Keeper service: [{}]", Arrays.toString(result));
 
-        String response = "ERROR. Something went wrong. Keeper wos not created :(";
+        String response = "ERROR. Something went wrong. Keeper was not created :(";
 
         if (result.length > 0) {
             response = String.format("Thanks, we added a new Keeper: %s in direction: %s",

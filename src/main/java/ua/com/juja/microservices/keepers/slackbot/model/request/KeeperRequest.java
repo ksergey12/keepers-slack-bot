@@ -36,7 +36,7 @@ public class KeeperRequest {
 
         if (userCount > 1) {
             throw new WrongCommandFormatException(String.format("We found %d slack names in your command: '%s' " +
-                            " You can't make two Keepers on one direction.", slackParsedCommand.getUserCount(),
+                            " You can't make more than one Keepers on one direction.", slackParsedCommand.getUserCount(),
                     slackParsedCommand.getText()));
         }
 
@@ -59,7 +59,7 @@ public class KeeperRequest {
 
         if (textWithoutSlackNames.split(" ").length > 1){
             throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
-                            " You can make Keeper only on one direction.", parsedCommand.getTextWithoutSlackNames()));
+                            " You can make Keeper on one direction only.", parsedCommand.getTextWithoutSlackNames()));
         }
 
         return parsedCommand.getTextWithoutSlackNames();
