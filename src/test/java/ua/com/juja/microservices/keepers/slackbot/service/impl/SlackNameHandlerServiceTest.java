@@ -19,14 +19,18 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Nikolay Horushko
+ * @author Dmitriy Lyashenko
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class SlackNameHandlerServiceTest {
+
     @Inject
     private SlackNameHandlerService slackNameHandlerService;
+
     @MockBean
     private UserService userService;
+
     private UserDTO userFrom;
     private UserDTO user1;
     private UserDTO user2;
