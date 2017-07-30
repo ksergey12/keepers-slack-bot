@@ -4,14 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ua.com.juja.microservices.keepers.slackbot.dao.KeeperRepository;
+import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Arrays;
 
 
 /**
  * @author Nikolay Horushko
+ * @author Dmitriy Lyashenko
  * @author Konstantin Sergey
  */
 @Service
@@ -25,10 +28,18 @@ public class DefaultKeeperService implements KeeperService {
     }
 
     @Override
+    public String[] sendKeeperAddRequest(KeeperRequest keeperRequest) {
+        logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
+        String[] ids = keeperRepository.addKeeper(keeperRequest);
+        logger.info("Added Keeper: [{}]", Arrays.toString(ids));
+        return ids;
+    }
+
+    @Override
     public List<String> getKeeperDirections(String uuid) {
-        logger.info("Received request to get directions of keeper with uuid: [{}]", uuid);
+        logger.debug("Received request to get directions of keeper with uuid: [{}]", uuid);
         List<String> result = keeperRepository.getKeeperDirections(uuid);
-        logger.debug("Received response from keeperRepository: [{}]", result.toString());
+        logger.info("Received response from keeperRepository: [{}]", result.toString());
         return result;
     }
 }

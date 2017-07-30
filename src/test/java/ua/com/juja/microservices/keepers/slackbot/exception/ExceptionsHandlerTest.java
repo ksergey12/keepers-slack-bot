@@ -1,4 +1,4 @@
-package ua.com.juja.microservices.keepers.slackbot.controller;
+package ua.com.juja.microservices.keepers.slackbot.exception;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ua.com.juja.microservices.keepers.slackbot.controller.KeepersSlackCommandController;
 import ua.com.juja.microservices.keepers.slackbot.model.SlackParsedCommand;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
@@ -17,7 +18,7 @@ import ua.com.juja.microservices.keepers.slackbot.service.impl.SlackNameHandlerS
 import ua.com.juja.microservices.utils.SlackUrlUtils;
 
 import javax.inject.Inject;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,14 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * @author Danil Kuznetsov
  * @author Nikolay Horushko
  * @author Dmitriy Lyashenko
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(KeepersSlackCommandController.class)
-public class KeepersSlackCommandControllerTest {
-
-    private static final String SORRY_MESSAGE = "Sorry! You're not lucky enough to use our slack command.";
+public class ExceptionsHandlerTest {
 
     @Inject
     private MockMvc mvc;
@@ -47,30 +47,16 @@ public class KeepersSlackCommandControllerTest {
 
     private UserDTO userFrom;
     private UserDTO user1;
-    private UserDTO user2;
-    private UserDTO user3;
 
     @Before
     public void setup() {
         userFrom = new UserDTO("AAA000", "@from-user");
         user1 = new UserDTO("AAA111", "@slack1");
-        user2 = new UserDTO("AAA222", "@slack2");
-        user3 = new UserDTO("AAA333", "@slack3");
     }
 
     @Test
-    public void onReceiveSlashCommandKeeperAddIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+    public void shouldHandleKeepersAPIError() throws Exception {
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
-                SlackUrlUtils.getUriVars("wrongSlackToken", "/command", KEEPER_ADD_COMMAND_TEXT))
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value(SORRY_MESSAGE));
-    }
-
-    @Test
-    public void onReceiveSlashKeeperAddReturnOkRichMessage() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
 
         Map<String, UserDTO> users = new HashMap<>();
@@ -78,39 +64,80 @@ public class KeepersSlackCommandControllerTest {
         users.put(user1.getSlack(), user1);
 
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT, users);
-        final String[] KEEPER_RESPONSE = {"1000"};
 
-        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT))
-                .thenReturn(slackParsedCommand);
-        when(keeperService.sendKeeperAddRequest(any(KeeperRequest.class))).thenReturn(KEEPER_RESPONSE);
-
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text")
-                .value("Thanks, we added a new Keeper: @slack1 in direction: teems"));
-    }
-
-    @Test
-    public void onReceiveSlashKeeperAddShouldReturnErrorMessageIfOccurException() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
-
-        Map<String, UserDTO> users = new HashMap<>();
-        users.put(userFrom.getSlack(), userFrom);
-        users.put(user1.getSlack(), user1);
-
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT, users);
+        ApiError apiError = new ApiError(
+                400, "KPR-F1-D4",
+                "Sorry, but you're not a keeper",
+                "Exception - KeeperAccessException",
+                "Something went wrong",
+                Collections.EMPTY_LIST
+        );
 
         when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), KEEPER_ADD_COMMAND_TEXT))
                 .thenReturn(slackParsedCommand);
         when(keeperService.sendKeeperAddRequest(any(KeeperRequest.class)))
-                .thenThrow(new RuntimeException("something went wrong"));
+                .thenThrow(new KeeperExchangeException(apiError, new RuntimeException("exception")));
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value("something went wrong"));
+                .andExpect(jsonPath("$.text").value("Sorry, but you're not a keeper"));
+    }
+
+    @Test
+    public void shouldHandleUserAPIError() throws Exception {
+
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+
+        ApiError apiError = new ApiError(
+                400, "USF-F1-D1",
+                "User not found",
+                "User not found",
+                "Something went wrong",
+                Collections.EMPTY_LIST
+        );
+
+        when(slackNameHandlerService.createSlackParsedCommand(any(), any())).
+                thenThrow(new UserExchangeException(apiError, new RuntimeException("exception")));
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value("User not found"));
+    }
+
+    @Test
+    public void shouldHandleWrongCommandException() throws Exception {
+
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+
+        when(slackNameHandlerService.createSlackParsedCommand(any(String.class), any(String.class))).
+                thenThrow(new WrongCommandFormatException("Wrong command exception"));
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value("Wrong command exception"));
+    }
+
+    @Test
+    public void shouldHandleAllOtherException() throws Exception {
+
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+
+        when(slackNameHandlerService.createSlackParsedCommand(any(String.class), any(String.class))).
+                thenThrow(new RuntimeException("Runtime exception"));
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value("Runtime exception"));
     }
 }
