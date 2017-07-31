@@ -61,7 +61,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Override
     public List<String> getKeeperDirections(String uuid) {
-        HttpEntity<String> request = new HttpEntity<>(uuid, setupBaseHttpHeaders());
+        HttpEntity<String> request = new HttpEntity<>(setupBaseHttpHeaders());
         List<String> result;
 
         try {
