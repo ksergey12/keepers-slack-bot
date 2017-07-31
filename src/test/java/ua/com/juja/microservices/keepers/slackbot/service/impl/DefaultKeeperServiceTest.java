@@ -13,10 +13,15 @@ import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Nikolay Horushko
@@ -51,5 +56,26 @@ public class DefaultKeeperServiceTest {
         //then
         assertThat(result, equalTo(expectedKeeperId));
         verify(keeperRepository).addKeeper(keeperRequest);
+    }
+
+    @Test
+    public void getKeeperDirections() {
+        //Given
+        List<String> expectedList = new ArrayList<>(Arrays.asList("direction1", "direction2"));
+        //When
+        when(keeperRepository.getKeeperDirections("0000-1111"))
+                .thenReturn(new ArrayList<>(Arrays.asList("direction1", "direction2")));
+        List<String> actualList = keeperService.getKeeperDirections("0000-1111");
+        //Then
+        assertEquals(expectedList, actualList);
+    }
+
+    @Test
+    public void getKeeperDirectionsWithEmptyResult() {
+        //When
+        when(keeperRepository.getKeeperDirections("0000-1111")).thenReturn(new ArrayList<>());
+        List<String> actualList = keeperService.getKeeperDirections("0000-1111");
+        //Then
+        assertTrue(actualList.isEmpty());
     }
 }
