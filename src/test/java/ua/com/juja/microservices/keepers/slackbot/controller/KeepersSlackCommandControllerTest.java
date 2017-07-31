@@ -18,6 +18,7 @@ import ua.com.juja.microservices.utils.SlackUrlUtils;
 
 import javax.inject.Inject;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,5 +113,68 @@ public class KeepersSlackCommandControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text").value("something went wrong"));
+    }
+
+    @Test
+    public void onReceiveSlashCommandGetKeeperDirectionsReturnEmptyRichMessage() throws Exception {
+        // given
+        final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT, users);
+        // when
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT))
+                .thenReturn(slackParsedCommand);
+        // then
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text")
+                        .value("За Хранителем @slack1 сейчас не закреплено ни одно направление."));
+    }
+
+    @Test
+    public void onReceiveSlashCommandGetKeeperDirectionsReturnOkRichMessage() throws Exception {
+        // given
+        final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT, users);
+        // when
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT))
+                .thenReturn(slackParsedCommand);
+        when(keeperService.getKeeperDirections("AAA111")).thenReturn(Arrays.asList("direction1", "direction2"));
+        // then
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text")
+                        .value("Закрепленные направления за Хранителем @slack1 : [direction1, direction2]"));
+    }
+
+    @Test
+    public void onReceiveSlashCommandGetKeeperDirectionsReturnErrorRichMessage() throws Exception {
+        // given
+        final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT, users);
+        // when
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT))
+                .thenReturn(slackParsedCommand);
+        when(keeperService.getKeeperDirections("AAA111"))
+                .thenThrow(new RuntimeException("ERROR. Something went wrong and we didn't get keeper directions"));
+        // then
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text")
+                        .value("ERROR. Something went wrong and we didn't get keeper directions"));
     }
 }
