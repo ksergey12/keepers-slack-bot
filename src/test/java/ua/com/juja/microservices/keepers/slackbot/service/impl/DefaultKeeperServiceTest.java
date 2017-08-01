@@ -64,7 +64,7 @@ public class DefaultKeeperServiceTest {
         List<String> expectedList = new ArrayList<>(Arrays.asList("direction1", "direction2"));
         //When
         when(keeperRepository.getKeeperDirections("0000-1111"))
-                .thenReturn(new ArrayList<>(Arrays.asList("direction1", "direction2")));
+                .thenReturn(expectedList);
         List<String> actualList = keeperService.getKeeperDirections("0000-1111");
         //Then
         assertEquals(expectedList, actualList);
