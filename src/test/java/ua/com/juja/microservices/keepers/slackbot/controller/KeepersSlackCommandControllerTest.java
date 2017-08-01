@@ -132,7 +132,7 @@ public class KeepersSlackCommandControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                        .value("За Хранителем @slack1 сейчас не закреплено ни одно направление."));
+                        .value("A keeper @slack1 have no active directions."));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class KeepersSlackCommandControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                        .value("Закрепленные направления за Хранителем @slack1 : [direction1, direction2]"));
+                        .value("A keeper @slack1 active directions are: [direction1, direction2]"));
     }
 
     @Test
