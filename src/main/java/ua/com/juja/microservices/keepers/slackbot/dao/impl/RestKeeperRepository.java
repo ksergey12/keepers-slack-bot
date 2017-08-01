@@ -15,6 +15,7 @@ import ua.com.juja.microservices.keepers.slackbot.exception.KeeperExchangeExcept
 import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
     @Override
     public List<String> getKeeperDirections(String uuid) {
         HttpEntity<String> request = new HttpEntity<>(setupBaseHttpHeaders());
-        List<String> result;
+        List<String> result = new ArrayList<>();
 
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
