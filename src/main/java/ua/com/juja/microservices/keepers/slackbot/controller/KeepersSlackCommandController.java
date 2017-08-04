@@ -91,10 +91,10 @@ public class KeepersSlackCommandController {
 
         String response = "ERROR. Something went wrong and we didn't get keeper directions";
         if (result.size() == 0) {
-            response = "A keeper " + keeperSlackName + " have no active directions.";
+            response = "The keeper " + keeperSlackName + " has no active directions.";
         }
         if (result.size() > 0) {
-            response = "A keeper " + keeperSlackName + " active directions are: " + result.toString();
+            response = "The keeper " + keeperSlackName + " has active directions: " + result.toString();
         }
         logger.info("GetKeeperDirections command processed : user: [{}] text: [{}] and sent response to slack: [{}]",
                 fromUser, text, response);
