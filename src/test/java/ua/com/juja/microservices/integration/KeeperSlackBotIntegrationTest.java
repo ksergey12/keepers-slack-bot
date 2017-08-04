@@ -181,6 +181,32 @@ public class KeeperSlackBotIntegrationTest {
                 .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
     }
 
+    @Test
+    public void onReceiveSlashCommandKeeperGetDirectionsReturnOkRichMessage() throws Exception {
+        final String GET_DIRECTIONS_COMMAND = "@slack1";
+        final List<UserDTO> usersInCommand = Arrays.asList(user1, userFrom);
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
+                "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
+                "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
+                "\"direction\":\"teems\"" +
+                "}";
+
+        final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
+
+        mockSuccessKeepersService(urlBaseKeeper + "/f2034f22-562b-4e02-bfcf-ec615c1ba62b",
+                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "A keeper @slack1 have no active directions.";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper", GET_DIRECTIONS_COMMAND))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
     private void mockFailUsersService(List<UserDTO> users) throws JsonProcessingException {
         List<String> slackNames = new ArrayList<>();
         for (UserDTO user : users) {
