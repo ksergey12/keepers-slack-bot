@@ -85,7 +85,7 @@ public class KeeperSlackBotIntegrationTest {
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
         mockSuccessKeepersService(urlBaseKeeper, EXPECTED_REQUEST_TO_KEEPERS,
-                EXPECTED_RESPONSE_FROM_KEEPERS);
+                EXPECTED_RESPONSE_FROM_KEEPERS, HttpMethod.POST);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
 
@@ -196,7 +196,7 @@ public class KeeperSlackBotIntegrationTest {
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
         mockSuccessKeepersService(urlBaseKeeper + "/f2034f22-562b-4e02-bfcf-ec615c1ba62b",
-                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS);
+                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS, HttpMethod.GET);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "A keeper @slack1 have no active directions.";
 
@@ -250,9 +250,10 @@ public class KeeperSlackBotIntegrationTest {
                 .andRespond(withSuccess(mapper.writeValueAsString(users), MediaType.APPLICATION_JSON_UTF8));
     }
 
-    private void mockSuccessKeepersService(String expectedURI, String expectedRequestBody, String response) {
+    private void mockSuccessKeepersService(String expectedURI, String expectedRequestBody,
+                                           String response, HttpMethod expectedHttpMethod) {
         mockServer.expect(requestTo(expectedURI))
-                .andExpect(method(HttpMethod.POST))
+                .andExpect(method(expectedHttpMethod))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(),
                         containsString("application/json")))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
