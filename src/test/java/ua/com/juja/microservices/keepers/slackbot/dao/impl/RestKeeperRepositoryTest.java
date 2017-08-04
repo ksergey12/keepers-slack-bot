@@ -107,7 +107,6 @@ public class RestKeeperRepositoryTest {
         List<String> actualList = keeperRepository.getKeeperDirections("0000-1111");
         // then
         mockServer.verify();
-        assertEquals(actualList.size(), 2);
         assertEquals("[direction1, direction2]", actualList.toString());
     }
 }
