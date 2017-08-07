@@ -61,14 +61,14 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
     }
 
     @Override
-    public List<String> getKeeperDirections(String uuid) {
-        HttpEntity<String> request = new HttpEntity<>(setupBaseHttpHeaders());
+    public List<String> getKeeperDirections(KeeperRequest keeperRequest) {
+        HttpEntity<KeeperRequest> request = new HttpEntity<>(keeperRequest, setupBaseHttpHeaders());
         List<String> result = new ArrayList<>();
 
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
             ResponseEntity<String[]> response = restTemplate.exchange(
-                    urlBaseKeeper + "/" + uuid, HttpMethod.GET, request, String[].class);
+                    urlBaseKeeper + "/" + keeperRequest.getUuid(), HttpMethod.GET, request, String[].class);
             result = Arrays.asList(response.getBody());
             logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());
         } catch (HttpClientErrorException ex) {

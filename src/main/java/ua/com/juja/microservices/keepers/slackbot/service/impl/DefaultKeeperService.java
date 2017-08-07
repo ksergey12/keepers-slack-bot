@@ -36,9 +36,9 @@ public class DefaultKeeperService implements KeeperService {
     }
 
     @Override
-    public List<String> getKeeperDirections(String uuid) {
-        logger.debug("Received request to get directions of keeper with uuid: [{}]", uuid);
-        List<String> result = keeperRepository.getKeeperDirections(uuid);
+    public List<String> getKeeperDirections(KeeperRequest keeperRequest) {
+        logger.debug("Received request to get directions of keeper with uuid: [{}]", keeperRequest.toString());
+        List<String> result = keeperRepository.getKeeperDirections(keeperRequest);
         logger.info("Received response from keeperRepository: [{}]", result.toString());
         return result;
     }

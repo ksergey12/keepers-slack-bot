@@ -79,16 +79,15 @@ public class KeepersSlackCommandController {
             logger.warn("Received invalid slack token: [{}] in command Keeper for user: [{}]", token, fromUser);
             return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
         }
-        logger.debug("Started create slackParsedCommand");
+        logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
-        logger.debug("Finished create slackParsedCommand: " + slackParsedCommand.toString());
+        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
+        logger.debug("Finished create slackParsedCommand and create keeper request");
 
-        String keeperUuid = slackParsedCommand.getFirstUser().getUuid();
-        String keeperSlackName = slackParsedCommand.getFirstUser().getSlack();
-
-        List<String> result = keeperService.getKeeperDirections(keeperUuid);
+        List<String> result = keeperService.getKeeperDirections(keeperRequest);
         logger.debug("Received response from Keeper service: [{}]", result.toString());
 
+        String keeperSlackName = slackParsedCommand.getFirstUser().getSlack();
         String response = "ERROR. Something went wrong and we didn't get keeper directions";
         if (result.size() == 0) {
             response = "The keeper " + keeperSlackName + " has no active directions.";
