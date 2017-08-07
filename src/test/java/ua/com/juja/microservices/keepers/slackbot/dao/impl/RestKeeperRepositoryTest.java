@@ -98,15 +98,18 @@ public class RestKeeperRepositoryTest {
     @Test
     public void shouldReturnKeeperDirections() {
         //given
+        String expectedRequestBody = "{\"from\":\"fromUser\",\"uuid\":\"0000-1111\",\"direction\":\"direction1\"}";
         String expectedRequestHeader = "application/json";
         mockServer.expect(requestTo(urlBaseKeeper + "/0000-1111"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
-                .andRespond(withSuccess("[\"direction1\",\"direction2\"]", MediaType.APPLICATION_JSON));
+                .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
+                .andRespond(withSuccess("[\"direction1\"]", MediaType.APPLICATION_JSON));
         //when
-        List<String> actualList = keeperRepository.getKeeperDirections("0000-1111");
+        List<String> actualList = keeperRepository.getKeeperDirections(
+                new KeeperRequest("fromUser", "0000-1111", "direction1"));
         // then
         mockServer.verify();
-        assertEquals("[direction1, direction2]", actualList.toString());
+        assertEquals("[direction1]", actualList.toString());
     }
 }

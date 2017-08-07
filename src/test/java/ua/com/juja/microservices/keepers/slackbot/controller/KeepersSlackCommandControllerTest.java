@@ -146,7 +146,7 @@ public class KeepersSlackCommandControllerTest {
         // when
         when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT))
                 .thenReturn(slackParsedCommand);
-        when(keeperService.getKeeperDirections("AAA111")).thenReturn(Arrays.asList("direction1", "direction2"));
+        when(keeperService.getKeeperDirections(any(KeeperRequest.class))).thenReturn(Arrays.asList("direction1", "direction2"));
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
@@ -167,7 +167,7 @@ public class KeepersSlackCommandControllerTest {
         // when
         when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), GET_DIRECTIONS_COMMAND_TEXT))
                 .thenReturn(slackParsedCommand);
-        when(keeperService.getKeeperDirections("AAA111"))
+        when(keeperService.getKeeperDirections(any(KeeperRequest.class)))
                 .thenThrow(new RuntimeException("ERROR. Something went wrong and we didn't get keeper directions"));
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),

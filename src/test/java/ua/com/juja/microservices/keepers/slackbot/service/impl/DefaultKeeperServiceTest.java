@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -61,20 +62,22 @@ public class DefaultKeeperServiceTest {
     @Test
     public void getKeeperDirections() {
         //Given
-        List<String> expectedList = new ArrayList<>(Arrays.asList("direction1", "direction2"));
+        KeeperRequest keeperRequest = new KeeperRequest("fromUser", "0000-1111", "direction1");
+        List<String> expectedList = new ArrayList<>(Collections.singletonList("direction1"));
         //When
-        when(keeperRepository.getKeeperDirections("0000-1111"))
-                .thenReturn(expectedList);
-        List<String> actualList = keeperService.getKeeperDirections("0000-1111");
+        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(expectedList);
+        List<String> actualList = keeperService.getKeeperDirections(keeperRequest);
         //Then
         assertEquals(expectedList, actualList);
     }
 
     @Test
     public void getKeeperDirectionsWithEmptyResult() {
+        //Given
+        KeeperRequest keeperRequest = new KeeperRequest("fromUser", "0000-1111", "direction1");
         //When
-        when(keeperRepository.getKeeperDirections("0000-1111")).thenReturn(new ArrayList<>());
-        List<String> actualList = keeperService.getKeeperDirections("0000-1111");
+        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(new ArrayList<>());
+        List<String> actualList = keeperService.getKeeperDirections(keeperRequest);
         //Then
         assertTrue(actualList.isEmpty());
     }
