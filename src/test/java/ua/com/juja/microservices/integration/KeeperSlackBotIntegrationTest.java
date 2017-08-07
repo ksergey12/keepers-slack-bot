@@ -128,20 +128,20 @@ public class KeeperSlackBotIntegrationTest {
                 .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
     }
 
-    @Test
-    public void returnErrorMessageIfKeeperAddCommandWithNoConsistDirections() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1";
-        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
-        mockSuccessUsersService(usersInCommand);
-
-        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1'";
-
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
-                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
-    }
+//    @Test
+//    public void returnErrorMessageIfKeeperAddCommandWithNoConsistDirections() throws Exception {
+//        final String KEEPER_ADD_COMMAND_TEXT = "@slack1";
+//        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+//        mockSuccessUsersService(usersInCommand);
+//
+//        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1'";
+//
+//        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+//                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+//                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+//    }
 
     @Test
     public void returnClientErrorMessageWhenUserServiceIsFail() throws Exception {

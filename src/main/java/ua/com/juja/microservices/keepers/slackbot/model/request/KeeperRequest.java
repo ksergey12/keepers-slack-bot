@@ -52,10 +52,10 @@ public class KeeperRequest {
 
         String textWithoutSlackNames = parsedCommand.getTextWithoutSlackNames();
 
-        if (textWithoutSlackNames.length() == 0){
-            throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
-                    parsedCommand.getText()));
-        }
+//        if (textWithoutSlackNames.length() == 0){
+//            throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
+//                    parsedCommand.getText()));
+//        }
 
         if (textWithoutSlackNames.split(" ").length > 1){
             throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
