@@ -119,7 +119,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
-                "You can perform action with keepers on one direction only.";
+                "You can perform the action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -135,7 +135,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
-                "You must write direction to perform action with keepers.";
+                "You must write the direction to perform the action with keepers.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -284,7 +284,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
-                "You can perform action with keepers on one direction only.";
+                "You can perform the action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
@@ -300,7 +300,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
-                "You must write direction to perform action with keepers.";
+                "You must write the direction to perform the action with keepers.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))

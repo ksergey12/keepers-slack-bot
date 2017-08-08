@@ -119,8 +119,8 @@ public class KeepersSlackCommandController {
         }
 
         if (userCount == 0) {
-            throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s' " +
-                    "You must write user's slack name to perform action with keepers.", slackParsedCommand.getText()));
+            throw new WrongCommandFormatException(String.format("We didn't find any slack name in your command. '%s' " +
+                    "You must write the user's slack name to perform the action with keepers.", slackParsedCommand.getText()));
         }
 
         return slackParsedCommand.getFirstUser();
@@ -132,12 +132,12 @@ public class KeepersSlackCommandController {
 
         if (textWithoutSlackNames.length() == 0){
             throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s' " +
-                    "You must write direction to perform action with keepers.", parsedCommand.getText()));
+                    "You must write the direction to perform the action with keepers.", parsedCommand.getText()));
         }
 
         if (textWithoutSlackNames.split(" ").length > 1){
             throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
-                    "You can perform action with keepers on one direction only.", parsedCommand.getTextWithoutSlackNames()));
+                    "You can perform the action with keepers on one direction only.", parsedCommand.getTextWithoutSlackNames()));
         }
 
         return parsedCommand.getTextWithoutSlackNames();
