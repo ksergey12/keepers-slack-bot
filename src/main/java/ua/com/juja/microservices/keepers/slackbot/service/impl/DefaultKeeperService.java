@@ -31,4 +31,12 @@ public class DefaultKeeperService implements KeeperService {
         logger.info("Added Keeper: [{}]", Arrays.toString(ids));
         return ids;
     }
+
+    @Override
+    public String[] sendKeeperDismissRequest(KeeperRequest keeperRequest) {
+        logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
+        String[] ids = keeperRepository.dismissKeeper(keeperRequest);
+        logger.info("Dismissed Keeper: [{}]", Arrays.toString(ids));
+        return ids;
+    }
 }

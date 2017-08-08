@@ -65,4 +65,38 @@ public class KeepersSlackCommandController {
 
         return new RichMessage(response);
     }
+
+    @PostMapping(value = "/commands/keeper-dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public RichMessage onReceiveSlashCommandKeeperDismiss(@RequestParam("token") String token,
+                                                      @RequestParam("user_name") String fromUser,
+                                                      @RequestParam("text") String text) {
+
+        logger.debug("Received slash command KeeperDismiss: from user: [{}] command: [{}] token: [{}]",
+                fromUser, text, token);
+
+        if (!token.equals(slackToken)) {
+            logger.warn("Received invalid slack token: [{}] in command KeeperDismiss for user: [{}]", token, fromUser);
+            return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
+        }
+
+        logger.debug("Started create slackParsedCommand and create keeper request");
+        SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
+        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
+        logger.debug("Finished create slackParsedCommand and create keeper request");
+
+        String[] result = keeperService.sendKeeperDismissRequest(keeperRequest);
+        logger.debug("Received response from Keeper service: [{}]", Arrays.toString(result));
+
+        String response = "ERROR. Something went wrong. Keeper was not dismissed :(";
+
+        if (result.length > 0) {
+            response = String.format("Keeper: %s in direction: %s dismissed" ,
+                    slackParsedCommand.getFirstUser().getSlack(), keeperRequest.getDirection());
+        }
+
+        logger.info("Keeper command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
+                fromUser, text, response);
+
+        return new RichMessage(response);
+    }
 }
