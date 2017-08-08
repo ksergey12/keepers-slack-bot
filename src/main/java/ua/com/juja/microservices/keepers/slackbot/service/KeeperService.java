@@ -8,4 +8,5 @@ import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
  */
 public interface KeeperService {
     String[] sendKeeperAddRequest(KeeperRequest keeperRequest);
+    String[] sendKeeperDismissRequest(KeeperRequest keeperRequest);
 }
