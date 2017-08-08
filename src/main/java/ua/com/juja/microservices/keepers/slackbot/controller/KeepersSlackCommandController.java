@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.SlackParsedCommand;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 import ua.com.juja.microservices.keepers.slackbot.service.impl.SlackNameHandlerService;
@@ -47,7 +49,10 @@ public class KeepersSlackCommandController {
 
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
-        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
+        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
+                                                        receiveToUser(slackParsedCommand).getUuid(),
+                                                        receiveToDirections(slackParsedCommand));
+
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
         String[] result = keeperService.sendKeeperAddRequest(keeperRequest);
@@ -81,7 +86,10 @@ public class KeepersSlackCommandController {
 
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
-        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand);
+        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
+                                                        receiveToUser(slackParsedCommand).getUuid(),
+                                                        receiveToDirections(slackParsedCommand));
+
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
         String[] result = keeperService.sendKeeperDismissRequest(keeperRequest);
@@ -98,5 +106,40 @@ public class KeepersSlackCommandController {
                 fromUser, text, response);
 
         return new RichMessage(response);
+    }
+
+    private UserDTO receiveToUser(SlackParsedCommand slackParsedCommand) {
+
+        int userCount = slackParsedCommand.getUserCount();
+
+        if (userCount > 1) {
+            throw new WrongCommandFormatException(String.format("We found %d slack names in your command: '%s' " +
+                            " You can't make more than one Keepers or dismiss more then one Keepers on one direction.",
+                    slackParsedCommand.getUserCount(), slackParsedCommand.getText()));
+        }
+
+        if (userCount == 0) {
+            throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s'" +
+                    " You must write user's slack name to make Keeper or dismiss Keeper.", slackParsedCommand.getText()));
+        }
+
+        return slackParsedCommand.getFirstUser();
+    }
+
+    private String receiveToDirections(SlackParsedCommand parsedCommand){
+
+        String textWithoutSlackNames = parsedCommand.getTextWithoutSlackNames();
+
+        if (textWithoutSlackNames.length() == 0){
+            throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
+                    parsedCommand.getText()));
+        }
+
+        if (textWithoutSlackNames.split(" ").length > 1){
+            throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
+                    " You can make Keeper or dismiss Keeper on one direction only.", parsedCommand.getTextWithoutSlackNames()));
+        }
+
+        return parsedCommand.getTextWithoutSlackNames();
     }
 }
