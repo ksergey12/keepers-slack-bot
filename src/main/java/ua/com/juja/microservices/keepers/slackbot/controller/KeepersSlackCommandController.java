@@ -114,13 +114,13 @@ public class KeepersSlackCommandController {
 
         if (userCount > 1) {
             throw new WrongCommandFormatException(String.format("We found %d slack names in your command: '%s' " +
-                            " You can't make more than one Keepers or dismiss more then one Keepers on one direction.",
+                            "You can not perform actions with several slack names.",
                     slackParsedCommand.getUserCount(), slackParsedCommand.getText()));
         }
 
         if (userCount == 0) {
-            throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s'" +
-                    " You must write user's slack name to make Keeper or dismiss Keeper.", slackParsedCommand.getText()));
+            throw new WrongCommandFormatException(String.format("We didn't find slack name in your command. '%s' " +
+                    "You must write user's slack name to perform action with keepers.", slackParsedCommand.getText()));
         }
 
         return slackParsedCommand.getFirstUser();
@@ -131,13 +131,13 @@ public class KeepersSlackCommandController {
         String textWithoutSlackNames = parsedCommand.getTextWithoutSlackNames();
 
         if (textWithoutSlackNames.length() == 0){
-            throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s'",
-                    parsedCommand.getText()));
+            throw new WrongCommandFormatException(String.format("We didn't find direction in your command: '%s' " +
+                    "You must write direction to perform action with keepers.", parsedCommand.getText()));
         }
 
         if (textWithoutSlackNames.split(" ").length > 1){
             throw new WrongCommandFormatException(String.format("We found several directions in your command: '%s' " +
-                    " You can make Keeper or dismiss Keeper on one direction only.", parsedCommand.getTextWithoutSlackNames()));
+                    "You can perform action with keepers on one direction only.", parsedCommand.getTextWithoutSlackNames()));
         }
 
         return parsedCommand.getTextWithoutSlackNames();

@@ -102,8 +102,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems'  " +
-                "You can't make more than one Keepers or dismiss more then one Keepers on one direction.";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
+                "You can not perform actions with several slack names.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -118,8 +118,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else'  " +
-                "You can make Keeper or dismiss Keeper on one direction only.";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+                "You can perform action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -134,7 +134,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1'";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
+                "You must write direction to perform action with keepers.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -266,8 +267,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems'  " +
-                "You can't make more than one Keepers or dismiss more then one Keepers on one direction.";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
+                "You can not perform actions with several slack names.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
@@ -282,8 +283,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else'  " +
-                "You can make Keeper or dismiss Keeper on one direction only.";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+                "You can perform action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
@@ -298,7 +299,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1'";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
+                "You must write direction to perform action with keepers.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
