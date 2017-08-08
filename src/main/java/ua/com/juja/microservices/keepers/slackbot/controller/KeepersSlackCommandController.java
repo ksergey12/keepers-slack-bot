@@ -35,7 +35,7 @@ public class KeepersSlackCommandController {
     }
 
     @PostMapping(value = "/commands/keeper-add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public RichMessage onReceiveSlashCommandKeeperAdd(@RequestParam("token") String token,
+    public RichMessage addKeeper(@RequestParam("token") String token,
                                                      @RequestParam("user_name") String fromUser,
                                                      @RequestParam("text") String text) {
 
@@ -72,7 +72,7 @@ public class KeepersSlackCommandController {
     }
 
     @PostMapping(value = "/commands/keeper-dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public RichMessage onReceiveSlashCommandKeeperDismiss(@RequestParam("token") String token,
+    public RichMessage dismissKeeper(@RequestParam("token") String token,
                                                       @RequestParam("user_name") String fromUser,
                                                       @RequestParam("text") String text) {
 
