@@ -11,5 +11,7 @@ import java.util.List;
 public interface KeeperRepository {
     String[] addKeeper(KeeperRequest keeperRequest);
 
+    String[] dismissKeeper(KeeperRequest keeperRequest);
+
     List<String> getKeeperDirections(KeeperRequest keeperRequest);
 }

@@ -39,6 +39,15 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Override
     public String[] addKeeper(KeeperRequest keeperRequest) {
+        return getCommonResponse(keeperRequest, HttpMethod.POST);
+    }
+
+    @Override
+    public String[] dismissKeeper(KeeperRequest keeperRequest) {
+        return getCommonResponse(keeperRequest, HttpMethod.PUT);
+    }
+
+    private String[] getCommonResponse(KeeperRequest keeperRequest, HttpMethod method) {
         logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
 
         HttpEntity<KeeperRequest> request = new HttpEntity<>(keeperRequest, setupBaseHttpHeaders());
@@ -47,7 +56,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
             ResponseEntity<String[]> response = restTemplate.exchange(urlBaseKeeper,
-                    HttpMethod.POST, request, String[].class);
+                    method, request, String[].class);
             result = response.getBody();
             logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());
         } catch (HttpClientErrorException ex) {

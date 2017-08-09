@@ -81,4 +81,20 @@ public class DefaultKeeperServiceTest {
         //Then
         assertTrue(actualList.isEmpty());
     }
+
+    @Test
+    public void shouldDismissKeeperAndReturnDismissedKeeperId() {
+
+        //given
+        String[] expectedKeeperId = {"100"};
+        KeeperRequest keeperRequest = new KeeperRequest("qwer", "67ui", "teems");
+        given(keeperRepository.dismissKeeper(keeperRequest)).willReturn(expectedKeeperId);
+
+        //when
+        String[] result = keeperService.sendKeeperDismissRequest(keeperRequest);
+
+        //then
+        assertThat(result, equalTo(expectedKeeperId));
+        verify(keeperRepository).dismissKeeper(keeperRequest);
+    }
 }

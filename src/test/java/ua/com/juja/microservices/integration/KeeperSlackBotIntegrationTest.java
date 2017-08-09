@@ -84,8 +84,8 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
-        mockSuccessKeepersService(urlBaseKeeper, EXPECTED_REQUEST_TO_KEEPERS,
-                EXPECTED_RESPONSE_FROM_KEEPERS, HttpMethod.POST);
+        mockSuccessKeepersService(urlBaseKeeper, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS,
+                EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
 
@@ -103,7 +103,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
-                " You can't make more than one Keepers on one direction.";
+                "You can not perform actions with several slack names.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -118,8 +118,8 @@ public class KeeperSlackBotIntegrationTest {
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else'  " +
-                "You can make Keeper on one direction only.";
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+                "You can perform the action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -128,23 +128,24 @@ public class KeeperSlackBotIntegrationTest {
                 .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
     }
 
-//    @Test
-//    public void returnErrorMessageIfKeeperAddCommandWithNoConsistDirections() throws Exception {
-//        final String KEEPER_ADD_COMMAND_TEXT = "@slack1";
-//        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
-//        mockSuccessUsersService(usersInCommand);
-//
-//        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1'";
-//
-//        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
-//                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
-//                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
-//    }
+    @Test
+    public void returnErrorMessageIfKeeperAddCommandWithNoConsistDirections() throws Exception {
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
+                "You must write the direction to perform the action with keepers.";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-add"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
 
     @Test
-    public void returnClientErrorMessageWhenUserServiceIsFail() throws Exception {
+    public void returnClientErrorMessageForKeeperAddWhenUserServiceIsFail() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockFailUsersService(usersInCommand);
@@ -159,7 +160,7 @@ public class KeeperSlackBotIntegrationTest {
     }
 
     @Test
-    public void returnClientErrorMessageWhenKeepersServiceIsFail() throws Exception {
+    public void returnClientErrorMessageForKeeperAddWhenKeepersServiceIsFail() throws Exception {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
@@ -170,7 +171,7 @@ public class KeeperSlackBotIntegrationTest {
                 "\"direction\":\"teems\"" +
                 "}";
 
-        mockFailKeepersService(urlBaseKeeper, EXPECTED_REQUEST_TO_KEEPERS);
+        mockFailKeepersService(urlBaseKeeper, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
 
@@ -195,8 +196,8 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"direction1, direction2\"]";
 
-        mockSuccessKeepersService(urlBaseKeeper + "/" + user1.getUuid(),
-                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS, HttpMethod.GET);
+        mockSuccessKeepersService(urlBaseKeeper + "/" + user1.getUuid(), HttpMethod.GET,
+                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "The keeper @slack1 has active directions: [direction1, direction2]";
 
@@ -221,8 +222,8 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[]";
 
-        mockSuccessKeepersService(urlBaseKeeper + "/" + user1.getUuid(),
-                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS, HttpMethod.GET);
+        mockSuccessKeepersService(urlBaseKeeper + "/" + user1.getUuid(), HttpMethod.GET,
+                EXPECTED_REQUEST_TO_KEEPERS, EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "The keeper @slack1 has no active directions.";
 
@@ -249,9 +250,9 @@ public class KeeperSlackBotIntegrationTest {
                         "\"exceptionMessage\":\"very big and scare error\",\"detailErrors\":[]}"));
     }
 
-    private void mockFailKeepersService(String expectedURI, String expectedRequestBody) {
+    private void mockFailKeepersService(String expectedURI, HttpMethod method, String expectedRequestBody) {
         mockServer.expect(requestTo(expectedURI))
-                .andExpect(method(HttpMethod.POST))
+                .andExpect(method(method))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(),
                         containsString("application/json")))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
@@ -274,13 +275,124 @@ public class KeeperSlackBotIntegrationTest {
                 .andRespond(withSuccess(mapper.writeValueAsString(users), MediaType.APPLICATION_JSON_UTF8));
     }
 
-    private void mockSuccessKeepersService(String expectedURI, String expectedRequestBody,
-                                           String response, HttpMethod expectedHttpMethod) {
+    private void mockSuccessKeepersService(String expectedURI, HttpMethod method, String expectedRequestBody, String response) {
         mockServer.expect(requestTo(expectedURI))
-                .andExpect(method(expectedHttpMethod))
+                .andExpect(method(method))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(),
                         containsString("application/json")))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void onReceiveSlashCommandKeeperDismissReturnOkRichMessage() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
+                "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
+                "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
+                "\"direction\":\"teems\"" +
+                "}";
+
+        final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
+
+        mockSuccessKeepersService(urlBaseKeeper,  HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS,
+                EXPECTED_RESPONSE_FROM_KEEPERS);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "Keeper: @slack1 in direction: teems dismissed";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnErrorMessageIfKeeperDismissCommandConsistTwoOrMoreSlackNames() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 @slack2 teems";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
+                "You can not perform actions with several slack names.";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnErrorMessageIfKeeperDismissCommandConsistTwoOrMoreDirections() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems else";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+                "You can perform the action with keepers on one direction only.";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnErrorMessageIfKeeperDismissCommandWithNoConsistDirections() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "We didn't find direction in your command: '@slack1' " +
+                "You must write the direction to perform the action with keepers.";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnClientErrorMessageForKeeperDismissWhenUserServiceIsFail() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockFailUsersService(usersInCommand);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
+    }
+
+    @Test
+    public void returnClientErrorMessageForKeeperDismissWhenKeepersServiceIsFail() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
+        mockSuccessUsersService(usersInCommand);
+
+        final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
+                "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
+                "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
+                "\"direction\":\"teems\"" +
+                "}";
+
+        mockFailKeepersService(urlBaseKeeper, HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS);
+
+        final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(EXPECTED_RESPONSE_TO_SLACK));
     }
 }

@@ -96,6 +96,45 @@ public class RestKeeperRepositoryTest {
     }
 
     @Test
+    public void shouldReturnKeeperIdWhenSendDismissKeeperToKeepersService() {
+        //given
+        String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teems\"}";
+        String expectedRequestHeader = "application/json";
+        mockServer.expect(requestTo(urlBaseKeeper))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
+                .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
+                .andRespond(withSuccess("[\"1000\"]", MediaType.APPLICATION_JSON));
+        //when
+        String[] result = keeperRepository.dismissKeeper(new KeeperRequest("qwer", "67ui", "teems"));
+
+        // then
+        mockServer.verify();
+        assertEquals(result.length, 1);
+        assertEquals("[1000]", Arrays.toString(result));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenSendDismissKeeperToKeepersServiceThrowException() {
+        // given
+        String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teems\"}";
+        String expectedRequestHeader = "application/json";
+        mockServer.expect(requestTo(urlBaseKeeper))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
+                .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
+                .andRespond(withBadRequest().body("{\"httpStatus\":400,\"internalErrorCode\":1," +
+                        "\"clientMessage\":\"Oops something went wrong :(\"," +
+                        "\"developerMessage\":\"General exception for this service\"," +
+                        "\"exceptionMessage\":\"very big and scare error\",\"detailErrors\":[]}"));
+        //then
+        thrown.expect(KeeperExchangeException.class);
+        thrown.expectMessage(containsString("Oops something went wrong :("));
+        //when
+        keeperRepository.dismissKeeper(new KeeperRequest("qwer", "67ui", "teems"));
+    }
+
+    @Test
     public void shouldReturnKeeperDirections() {
         //given
         String expectedRequestBody = "{\"from\":\"fromUser\",\"uuid\":\"0000-1111\",\"direction\":\"direction1\"}";

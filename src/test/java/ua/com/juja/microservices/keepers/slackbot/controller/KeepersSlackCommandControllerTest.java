@@ -116,7 +116,63 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandGetKeeperDirectionsReturnEmptyRichMessage() throws Exception {
+    public void onReceiveSlashCommandKeeperDismissIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teems";
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("wrongSlackToken", "/command", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value(SORRY_MESSAGE));
+    }
+
+    @Test
+    public void onReceiveSlashKeeperDismissReturnOkRichMessage() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
+
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), KEEPER_DISMISS_COMMAND_TEXT, users);
+        final String[] KEEPER_RESPONSE = {"1000"};
+
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), KEEPER_DISMISS_COMMAND_TEXT))
+                .thenReturn(slackParsedCommand);
+        when(keeperService.sendKeeperDismissRequest(any(KeeperRequest.class))).thenReturn(KEEPER_RESPONSE);
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text")
+                        .value("Keeper: @slack1 in direction: teems dismissed"));
+    }
+
+    @Test
+    public void onReceiveSlashKeeperDismissShouldReturnErrorMessageIfOccurException() throws Exception {
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+
+        Map<String, UserDTO> users = new HashMap<>();
+        users.put(userFrom.getSlack(), userFrom);
+        users.put(user1.getSlack(), user1);
+
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(userFrom.getSlack(), KEEPER_DISMISS_COMMAND_TEXT, users);
+
+        when(slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), KEEPER_DISMISS_COMMAND_TEXT))
+                .thenReturn(slackParsedCommand);
+        when(keeperService.sendKeeperDismissRequest(any(KeeperRequest.class)))
+                .thenThrow(new RuntimeException("something went wrong"));
+
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper-dismiss"),
+                SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.text").value("something went wrong"));
+    }
+
+    @Test
+    public void getKeeperDirectionsReturnEmptyRichMessage() throws Exception {
         // given
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
         Map<String, UserDTO> users = new HashMap<>();
@@ -136,7 +192,7 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandGetKeeperDirectionsReturnOkRichMessage() throws Exception {
+    public void getKeeperDirectionsReturnOkRichMessage() throws Exception {
         // given
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
         Map<String, UserDTO> users = new HashMap<>();
@@ -157,7 +213,7 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandGetKeeperDirectionsReturnErrorRichMessage() throws Exception {
+    public void getKeeperDirectionsReturnErrorRichMessage() throws Exception {
         // given
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
         Map<String, UserDTO> users = new HashMap<>();

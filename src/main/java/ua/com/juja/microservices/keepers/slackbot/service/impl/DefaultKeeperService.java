@@ -36,6 +36,14 @@ public class DefaultKeeperService implements KeeperService {
     }
 
     @Override
+    public String[] sendKeeperDismissRequest(KeeperRequest keeperRequest) {
+        logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
+        String[] ids = keeperRepository.dismissKeeper(keeperRequest);
+        logger.info("Dismissed Keeper: [{}]", Arrays.toString(ids));
+        return ids;
+    }
+
+    @Override
     public List<String> getKeeperDirections(KeeperRequest keeperRequest) {
         logger.debug("Received request to get directions of keeper with uuid: [{}]", keeperRequest.toString());
         List<String> result = keeperRepository.getKeeperDirections(keeperRequest);
