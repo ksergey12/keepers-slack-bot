@@ -43,8 +43,9 @@ public class RestUserRepositoryTest {
 
     @Value("${user.baseURL}")
     private String urlBase;
-    @Value("${endpoint.userSearch}")
-    private String urlGetUser;
+
+    @Value("${endpoint.usersBySlackNames}")
+    private String urlGetUsers;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -60,7 +61,7 @@ public class RestUserRepositoryTest {
         List<String> slackNames = new ArrayList<>();
         slackNames.add("@bob.slack");
         slackNames.add("@john.slack");
-        mockServer.expect(requestTo(urlBase + urlGetUser))
+        mockServer.expect(requestTo(urlBase + urlGetUsers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(content().string("{\"slackNames\":[\"@bob.slack\",\"@john.slack\"]}"))
