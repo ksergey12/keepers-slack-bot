@@ -49,6 +49,10 @@ public class SlackParsedCommand {
 
     public UserDTO getFirstUser() {
         checkSlackNamesPresence();
+        if(users.isEmpty()){
+            logger.warn("The map 'users' is empty");
+            throw new WrongCommandFormatException("The map 'users' is empty");
+        }
         UserDTO firstUser = users.get(slackNamesInText.get(0));
         logger.debug("Found user: {} in text: [{}]", firstUser.toString(), text);
         return firstUser;
@@ -84,7 +88,7 @@ public class SlackParsedCommand {
 
     private void checkSlackNamesPresence() {
         if (userCount == 0) {
-            logger.warn("The text: [{}] doesn't contain slack name.");
+            logger.warn("The text: [{}] doesn't contain slack name", text);
             throw new WrongCommandFormatException(String.format("The text '%s' doesn't contain any slackName", text));
         }
     }

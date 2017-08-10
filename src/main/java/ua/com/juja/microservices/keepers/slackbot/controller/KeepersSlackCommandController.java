@@ -14,10 +14,12 @@ import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 import ua.com.juja.microservices.keepers.slackbot.service.impl.SlackNameHandlerService;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nikolay Horushko
  * @author Dmitriy Lyashenko
+ * @author Konstantin Sergey
  */
 @RestController
 public class KeepersSlackCommandController {
@@ -36,8 +38,8 @@ public class KeepersSlackCommandController {
 
     @PostMapping(value = "/commands/keeper-add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage addKeeper(@RequestParam("token") String token,
-                                                     @RequestParam("user_name") String fromUser,
-                                                     @RequestParam("text") String text) {
+                                 @RequestParam("user_name") String fromUser,
+                                 @RequestParam("text") String text) {
 
         logger.debug("Received slash command KeeperAdd: from user: [{}] command: [{}] token: [{}]",
                 fromUser, text, token);
@@ -50,8 +52,8 @@ public class KeepersSlackCommandController {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
-                                                        receiveToUser(slackParsedCommand).getUuid(),
-                                                        receiveToDirections(slackParsedCommand));
+                receiveToUser(slackParsedCommand).getUuid(),
+                receiveToDirections(slackParsedCommand));
 
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
@@ -73,8 +75,8 @@ public class KeepersSlackCommandController {
 
     @PostMapping(value = "/commands/keeper-dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage dismissKeeper(@RequestParam("token") String token,
-                                                      @RequestParam("user_name") String fromUser,
-                                                      @RequestParam("text") String text) {
+                                     @RequestParam("user_name") String fromUser,
+                                     @RequestParam("text") String text) {
 
         logger.debug("Received slash command KeeperDismiss: from user: [{}] command: [{}] token: [{}]",
                 fromUser, text, token);
@@ -87,8 +89,8 @@ public class KeepersSlackCommandController {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
-                                                        receiveToUser(slackParsedCommand).getUuid(),
-                                                        receiveToDirections(slackParsedCommand));
+                receiveToUser(slackParsedCommand).getUuid(),
+                receiveToDirections(slackParsedCommand));
 
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
@@ -103,6 +105,46 @@ public class KeepersSlackCommandController {
         }
 
         logger.info("Keeper command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
+                fromUser, text, response);
+
+        return new RichMessage(response);
+    }
+
+    @PostMapping(value = "/commands/keeper", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public RichMessage getKeeperDirections(@RequestParam("token") String token,
+                                           @RequestParam("user_name") String fromUser,
+                                           @RequestParam("text") String text) {
+        logger.debug("Received slash command GetKeeperDirections: from user: [{}] command: [{}] token: [{}]",
+                fromUser, text, token);
+
+        if (!token.equals(slackToken)) {
+            logger.warn("Received invalid slack token: [{}] in command Keeper for user: [{}]", token, fromUser);
+            return new RichMessage("Sorry! You're not lucky enough to use our slack command.");
+        }
+
+        logger.debug("Started create slackParsedCommand and create keeper request");
+        SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
+        KeeperRequest keeperRequest = new KeeperRequest(
+                slackParsedCommand.getFromUser().getUuid(),
+                slackParsedCommand.getFirstUser().getUuid(),
+                slackParsedCommand.getTextWithoutSlackNames());
+        logger.debug("Finished create slackParsedCommand and create keeper request");
+
+        List<String> result = keeperService.getKeeperDirections(keeperRequest);
+        logger.debug("Received response from Keeper service: [{}]", result.toString());
+
+        String keeperSlackName = slackParsedCommand.getFirstUser().getSlack();
+        String response = "ERROR. Something went wrong and we didn't get keeper directions";
+
+        if (result.size() == 0) {
+            response = "The keeper " + keeperSlackName + " has no active directions.";
+        }
+
+        if (result.size() > 0) {
+            response = "The keeper " + keeperSlackName + " has active directions: " + result.toString();
+        }
+
+        logger.info("GetKeeperDirections command processed : user: [{}] text: [{}] and sent response to slack: [{}]",
                 fromUser, text, response);
 
         return new RichMessage(response);

@@ -18,6 +18,7 @@ import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -134,5 +135,23 @@ public class RestKeeperRepositoryTest {
         thrown.expectMessage(containsString("Oops something went wrong :("));
         //when
         keeperRepository.dismissKeeper(new KeeperRequest("qwer", "67ui", "teems"));
+    }
+
+    @Test
+    public void shouldReturnKeeperDirections() {
+        //given
+        String expectedRequestBody = "{\"from\":\"fromUser\",\"uuid\":\"0000-1111\",\"direction\":\"direction1\"}";
+        String expectedRequestHeader = "application/json";
+        mockServer.expect(requestTo(urlBaseKeeper + "/0000-1111"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
+                .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
+                .andRespond(withSuccess("[\"direction1\"]", MediaType.APPLICATION_JSON));
+        //when
+        List<String> actualList = keeperRepository.getKeeperDirections(
+                new KeeperRequest("fromUser", "0000-1111", "direction1"));
+        // then
+        mockServer.verify();
+        assertEquals("[direction1]", actualList.toString());
     }
 }

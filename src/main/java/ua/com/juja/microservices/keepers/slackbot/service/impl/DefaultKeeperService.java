@@ -8,11 +8,14 @@ import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Arrays;
+
 
 /**
  * @author Nikolay Horushko
  * @author Dmitriy Lyashenko
+ * @author Konstantin Sergey
  */
 @Service
 public class DefaultKeeperService implements KeeperService {
@@ -38,5 +41,13 @@ public class DefaultKeeperService implements KeeperService {
         String[] ids = keeperRepository.dismissKeeper(keeperRequest);
         logger.info("Dismissed Keeper: [{}]", Arrays.toString(ids));
         return ids;
+    }
+
+    @Override
+    public List<String> getKeeperDirections(KeeperRequest keeperRequest) {
+        logger.debug("Received request to get directions of keeper with uuid: [{}]", keeperRequest.toString());
+        List<String> result = keeperRepository.getKeeperDirections(keeperRequest);
+        logger.info("Received response from keeperRepository: [{}]", result.toString());
+        return result;
     }
 }
