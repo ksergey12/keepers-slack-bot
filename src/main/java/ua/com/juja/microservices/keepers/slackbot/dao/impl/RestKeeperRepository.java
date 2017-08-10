@@ -29,6 +29,9 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
     @Value("${keepers.baseURL}")
     private String urlBaseKeeper;
 
+    @Value("${endpoint.keepers}")
+    private String urlKeepers;
+
     @Inject
     public RestKeeperRepository(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -52,7 +55,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
-            ResponseEntity<String[]> response = restTemplate.exchange(urlBaseKeeper,
+            ResponseEntity<String[]> response = restTemplate.exchange(urlBaseKeeper + urlKeepers,
                     method, request, String[].class);
             result = response.getBody();
             logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());

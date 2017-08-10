@@ -31,8 +31,8 @@ public class RestUserRepository extends AbstractRestRepository implements UserRe
 
     @Value("${user.baseURL}")
     private String urlBase;
-    @Value("${endpoint.userSearch}")
-    private String urlGetUser;
+    @Value("${endpoint.usersBySlackNames}")
+    private String urlGetUsers;
 
     @Inject
     public RestUserRepository(RestTemplate restTemplate) {
@@ -57,7 +57,7 @@ public class RestUserRepository extends AbstractRestRepository implements UserRe
         List<UserDTO> result;
         try {
             logger.debug("Started request to Users service. Request is : [{}]", request.toString());
-            ResponseEntity<UserDTO[]> response = restTemplate.exchange(urlBase + urlGetUser,
+            ResponseEntity<UserDTO[]> response = restTemplate.exchange(urlBase + urlGetUsers,
                     HttpMethod.POST, request, UserDTO[].class);
             logger.debug("Finished request to Users service. Response is: [{}]", response.toString());
             result = Arrays.asList(response.getBody());

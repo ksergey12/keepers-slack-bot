@@ -1,9 +1,5 @@
 package ua.com.juja.microservices.keepers.slackbot;
 
-/**
- * Created by Nikol on 6/21/2017.
- */
-
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

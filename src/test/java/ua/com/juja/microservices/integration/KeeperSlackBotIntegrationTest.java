@@ -51,15 +51,20 @@ public class KeeperSlackBotIntegrationTest {
 
     @Inject
     private MockMvc mvc;
+
     private MockRestServiceServer mockServer;
 
     @Value("${keepers.baseURL}")
     private String urlBaseKeeper;
 
+    @Value("${endpoint.keepers}")
+    private String urlKeepers;
+
     @Value("${user.baseURL}")
     private String urlBaseUser;
-    @Value("${endpoint.userSearch}")
-    private String urlGetUser;
+
+    @Value("${endpoint.usersBySlackNames}")
+    private String urlGetUsers;
 
     private UserDTO userFrom = new UserDTO("f2034f11-561a-4e01-bfcf-ec615c1ba61a", "@from-user");
     private UserDTO user1 = new UserDTO("f2034f22-562b-4e02-bfcf-ec615c1ba62b", "@slack1");
@@ -84,7 +89,7 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
-        mockSuccessKeepersService(urlBaseKeeper, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS,
+        mockSuccessKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
@@ -171,7 +176,7 @@ public class KeeperSlackBotIntegrationTest {
                 "\"direction\":\"teems\"" +
                 "}";
 
-        mockFailKeepersService(urlBaseKeeper, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS);
+        mockFailKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
 
@@ -188,7 +193,7 @@ public class KeeperSlackBotIntegrationTest {
             slackNames.add(user.getSlack());
         }
         ObjectMapper mapper = new ObjectMapper();
-        mockServer.expect(requestTo(urlBaseUser + urlGetUser))
+        mockServer.expect(requestTo(urlBaseUser + urlGetUsers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(content().string(String.format("{\"slackNames\":%s}", mapper.writeValueAsString(slackNames))))
@@ -218,7 +223,7 @@ public class KeeperSlackBotIntegrationTest {
             slackNames.add(user.getSlack());
         }
         ObjectMapper mapper = new ObjectMapper();
-        mockServer.expect(requestTo(urlBaseUser + urlGetUser))
+        mockServer.expect(requestTo(urlBaseUser + urlGetUsers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(content().string(String.format("{\"slackNames\":%s}", mapper.writeValueAsString(slackNames))))
@@ -249,7 +254,7 @@ public class KeeperSlackBotIntegrationTest {
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
 
-        mockSuccessKeepersService(urlBaseKeeper,  HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS,
+        mockSuccessKeepersService(urlBaseKeeper + urlKeepers,  HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Keeper: @slack1 in direction: teems dismissed";
@@ -336,7 +341,7 @@ public class KeeperSlackBotIntegrationTest {
                 "\"direction\":\"teems\"" +
                 "}";
 
-        mockFailKeepersService(urlBaseKeeper, HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS);
+        mockFailKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS);
 
         final String EXPECTED_RESPONSE_TO_SLACK = "Oops something went wrong :(";
 
