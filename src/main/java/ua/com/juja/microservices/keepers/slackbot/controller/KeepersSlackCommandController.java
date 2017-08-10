@@ -22,6 +22,7 @@ import java.util.List;
  * @author Konstantin Sergey
  */
 @RestController
+@RequestMapping("/commands/keeper")
 public class KeepersSlackCommandController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -36,7 +37,7 @@ public class KeepersSlackCommandController {
         this.slackNameHandlerService = slackNameHandlerService;
     }
 
-    @PostMapping(value = "/commands/keeper-add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage addKeeper(@RequestParam("token") String token,
                                  @RequestParam("user_name") String fromUser,
                                  @RequestParam("text") String text) {
@@ -73,7 +74,7 @@ public class KeepersSlackCommandController {
         return new RichMessage(response);
     }
 
-    @PostMapping(value = "/commands/keeper-dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage dismissKeeper(@RequestParam("token") String token,
                                      @RequestParam("user_name") String fromUser,
                                      @RequestParam("text") String text) {
@@ -110,7 +111,7 @@ public class KeepersSlackCommandController {
         return new RichMessage(response);
     }
 
-    @PostMapping(value = "/commands/keeper", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RichMessage getKeeperDirections(@RequestParam("token") String token,
                                            @RequestParam("user_name") String fromUser,
                                            @RequestParam("text") String text) {
