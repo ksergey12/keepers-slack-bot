@@ -64,7 +64,7 @@ public class KeepersSlackCommandController {
 
         if (result.length > 0) {
             response = String.format("Thanks, we added a new Keeper: %s in direction: %s",
-                    slackParsedCommand.getFirstUser().getSlack(), keeperRequest.getDirection());
+                    slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
         }
 
         logger.info("Keeper command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
@@ -101,7 +101,7 @@ public class KeepersSlackCommandController {
 
         if (result.length > 0) {
             response = String.format("Keeper: %s in direction: %s dismissed" ,
-                    slackParsedCommand.getFirstUser().getSlack(), keeperRequest.getDirection());
+                    slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
         }
 
         logger.info("Keeper command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
@@ -126,14 +126,14 @@ public class KeepersSlackCommandController {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(
                 slackParsedCommand.getFromUser().getUuid(),
-                slackParsedCommand.getFirstUser().getUuid(),
+                slackParsedCommand.getFirstUserFromText().getUuid(),
                 slackParsedCommand.getTextWithoutSlackNames());
         logger.debug("Finished create slackParsedCommand and create keeper request");
 
         List<String> result = keeperService.getKeeperDirections(keeperRequest);
         logger.debug("Received response from Keeper service: [{}]", result.toString());
 
-        String keeperSlackName = slackParsedCommand.getFirstUser().getSlack();
+        String keeperSlackName = slackParsedCommand.getFirstUserFromText().getSlack();
         String response = "ERROR. Something went wrong and we didn't get keeper directions";
 
         if (result.size() == 0) {
@@ -152,12 +152,12 @@ public class KeepersSlackCommandController {
 
     private UserDTO receiveToUser(SlackParsedCommand slackParsedCommand) {
 
-        int userCount = slackParsedCommand.getUserCount();
+        int userCount = slackParsedCommand.getUserCountInText();
 
         if (userCount > 1) {
             throw new WrongCommandFormatException(String.format("We found %d slack names in your command: '%s' " +
                             "You can not perform actions with several slack names.",
-                    slackParsedCommand.getUserCount(), slackParsedCommand.getText()));
+                    slackParsedCommand.getUserCountInText(), slackParsedCommand.getText()));
         }
 
         if (userCount == 0) {
@@ -165,7 +165,7 @@ public class KeepersSlackCommandController {
                     "You must write the user's slack name to perform the action with keepers.", slackParsedCommand.getText()));
         }
 
-        return slackParsedCommand.getFirstUser();
+        return slackParsedCommand.getFirstUserFromText();
     }
 
     private String receiveToDirections(SlackParsedCommand parsedCommand){
