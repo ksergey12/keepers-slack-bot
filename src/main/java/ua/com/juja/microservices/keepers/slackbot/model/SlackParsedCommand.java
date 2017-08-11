@@ -38,7 +38,7 @@ public class SlackParsedCommand {
                 fromSlackName, text, slackNamesInText.toString(), users.toString());
     }
 
-    public List<UserDTO> getAllUsers() {
+    public List<UserDTO> getAllUsersFromText() {
         checkSlackNamesPresence();
         Map<String, UserDTO> usersCopy = new HashMap<>();
         usersCopy.putAll(users);
@@ -47,7 +47,7 @@ public class SlackParsedCommand {
         return new LinkedList(usersCopy.values());
     }
 
-    public UserDTO getFirstUser() {
+    public UserDTO getFirstUserFromText() {
         checkSlackNamesPresence();
         if(users.isEmpty()){
             logger.warn("The map 'users' is empty");
@@ -72,7 +72,7 @@ public class SlackParsedCommand {
         return text;
     }
 
-    public int getUserCount() {
+    public int getUserCountInText() {
         return userCount;
     }
 
