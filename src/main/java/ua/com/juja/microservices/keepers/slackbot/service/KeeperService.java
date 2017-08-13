@@ -1,17 +1,13 @@
 package ua.com.juja.microservices.keepers.slackbot.service;
 
-import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
-
-import java.util.List;
-
 /**
  * @author Nikolay Horushko
  * @author Dmitriy Lyashenko
  */
 public interface KeeperService {
-    String[] sendKeeperAddRequest(KeeperRequest keeperRequest);
+    String sendKeeperAddRequest(String fromUser, String text);
 
-    String[] sendKeeperDismissRequest(KeeperRequest keeperRequest);
+    String sendKeeperDismissRequest(String fromUser, String text);
 
-    List<String> getKeeperDirections(KeeperRequest keeperRequest);
+    String getKeeperDirections(String fromUser, String text);
 }

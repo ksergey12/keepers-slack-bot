@@ -18,7 +18,6 @@ import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -148,10 +147,10 @@ public class RestKeeperRepositoryTest {
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
                 .andRespond(withSuccess("[\"direction1\"]", MediaType.APPLICATION_JSON));
         //when
-        List<String> actualList = keeperRepository.getKeeperDirections(
+        String[] actualList = keeperRepository.getKeeperDirections(
                 new KeeperRequest("fromUser", "0000-1111", "direction1"));
         // then
         mockServer.verify();
-        assertEquals("[direction1]", actualList.toString());
+        assertEquals("[direction1]", Arrays.toString(actualList));
     }
 }

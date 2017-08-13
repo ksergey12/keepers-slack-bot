@@ -1,5 +1,6 @@
 package ua.com.juja.microservices.keepers.slackbot.model.request;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -8,6 +9,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString
+@EqualsAndHashCode
 public class KeeperRequest {
 
     private String from;

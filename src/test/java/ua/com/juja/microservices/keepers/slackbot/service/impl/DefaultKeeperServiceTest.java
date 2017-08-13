@@ -8,19 +8,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ua.com.juja.microservices.keepers.slackbot.dao.KeeperRepository;
+import ua.com.juja.microservices.keepers.slackbot.model.SlackParsedCommand;
+import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 
 import javax.inject.Inject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,66 +32,95 @@ public class DefaultKeeperServiceTest {
     @MockBean
     private KeeperRepository keeperRepository;
 
+    @MockBean
+    private SlackNameHandlerService slackNameHandlerService;
+
     @Inject
     private KeeperService keeperService;
+
+    private Map<String, UserDTO> users;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        users = new HashMap<>();
+        users.put("@from", new UserDTO("uuid0", "@from"));
+        users.put("@slack_name", new UserDTO("uuid1", "@slack_name"));
     }
 
     @Test
-    public void shouldSaveKeeperAndReturnNewKeeperId() {
-
+    public void shouldSaveKeeperAndReturnValidText() {
         //given
         String[] expectedKeeperId = {"100"};
-        KeeperRequest keeperRequest = new KeeperRequest("qwer", "67ui", "teems");
-        given(keeperRepository.addKeeper(keeperRequest)).willReturn(expectedKeeperId);
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teems");
+        when(keeperRepository.addKeeper(keeperRequest)).thenReturn(expectedKeeperId);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT, users));
 
         //when
-        String[] result = keeperService.sendKeeperAddRequest(keeperRequest);
+        String result = keeperService.sendKeeperAddRequest("@from", KEEPER_ADD_COMMAND_TEXT);
 
         //then
-        assertThat(result, equalTo(expectedKeeperId));
+        assertEquals("Thanks, we added a new Keeper: @slack_name in direction: teems", result);
         verify(keeperRepository).addKeeper(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT);
+    }
+
+    @Test
+    public void shouldDismissKeeperAndReturnValidText() {
+        //given
+        String[] expectedKeeperId = {"100"};
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teems";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teems");
+        when(keeperRepository.dismissKeeper(keeperRequest)).thenReturn(expectedKeeperId);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT, users));
+
+        //when
+        String result = keeperService.sendKeeperDismissRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
+
+        //then
+        assertEquals("Keeper: @slack_name in direction: teems dismissed", result);
+        verify(keeperRepository).dismissKeeper(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT);
     }
 
     @Test
     public void getKeeperDirections() {
         //Given
-        KeeperRequest keeperRequest = new KeeperRequest("fromUser", "0000-1111", "direction1");
-        List<String> expectedList = new ArrayList<>(Collections.singletonList("direction1"));
+        String[] expected = {"direction1"};
+        final String GET_KEEPER_DIRECTIONS_COMMAND_TEXT = "@slack_name";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "");
+        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(expected);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT, users));
+
         //When
-        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(expectedList);
-        List<String> actualList = keeperService.getKeeperDirections(keeperRequest);
+        String result = keeperService.getKeeperDirections("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
+
         //Then
-        assertEquals(expectedList, actualList);
+        assertEquals("The keeper @slack_name has active directions: [direction1]", result);
+        verify(keeperRepository).getKeeperDirections(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
     }
 
     @Test
     public void getKeeperDirectionsWithEmptyResult() {
         //Given
-        KeeperRequest keeperRequest = new KeeperRequest("fromUser", "0000-1111", "direction1");
+        String[] emptyArray = {};
+        final String GET_KEEPER_DIRECTIONS_COMMAND_TEXT = "@slack_name";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "");
+        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(emptyArray);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT, users));
+
         //When
-        when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(new ArrayList<>());
-        List<String> actualList = keeperService.getKeeperDirections(keeperRequest);
+        String result = keeperService.getKeeperDirections("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
+
         //Then
-        assertTrue(actualList.isEmpty());
-    }
-
-    @Test
-    public void shouldDismissKeeperAndReturnDismissedKeeperId() {
-
-        //given
-        String[] expectedKeeperId = {"100"};
-        KeeperRequest keeperRequest = new KeeperRequest("qwer", "67ui", "teems");
-        given(keeperRepository.dismissKeeper(keeperRequest)).willReturn(expectedKeeperId);
-
-        //when
-        String[] result = keeperService.sendKeeperDismissRequest(keeperRequest);
-
-        //then
-        assertThat(result, equalTo(expectedKeeperId));
-        verify(keeperRepository).dismissKeeper(keeperRequest);
+        assertEquals("The keeper @slack_name has no active directions.", result);
+        verify(keeperRepository).getKeeperDirections(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
     }
 }
