@@ -36,7 +36,7 @@ public class KeepersSlackCommandControllerTest {
 
     @Test
     public void onReceiveSlashCommandKeeperAddIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
                 SlackUrlUtils.getUriVars("wrongSlackToken", "/command", KEEPER_ADD_COMMAND_TEXT))
@@ -47,22 +47,23 @@ public class KeepersSlackCommandControllerTest {
 
     @Test
     public void onReceiveSlashKeeperAddReturnOkRichMessage() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
-        final String KEEPER_RESPONSE = "Thanks, we added a new Keeper: @slack1 in direction: teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
+        final String KEEPER_RESPONSE = "Thanks, we added a new Keeper: @slack1 in direction: teams";
 
-        when(keeperService.sendKeeperAddRequest(any(String.class), any(String.class))).thenReturn(KEEPER_RESPONSE);
+        when(keeperService.sendKeeperAddRequest("@from-user", KEEPER_ADD_COMMAND_TEXT))
+                .thenReturn(KEEPER_RESPONSE);
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                .value("Thanks, we added a new Keeper: @slack1 in direction: teems"));
+                .value("Thanks, we added a new Keeper: @slack1 in direction: teams"));
     }
 
     @Test
     public void onReceiveSlashKeeperAddShouldReturnErrorMessageIfOccurException() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
 
         when(keeperService.sendKeeperAddRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException("something went wrong"));
@@ -76,7 +77,7 @@ public class KeepersSlackCommandControllerTest {
 
     @Test
     public void onReceiveSlashCommandKeeperDismissIncorrectTokenShouldReturnSorryRichMessage() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teams";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
                 SlackUrlUtils.getUriVars("wrongSlackToken", "/command", KEEPER_DISMISS_COMMAND_TEXT))
@@ -87,22 +88,23 @@ public class KeepersSlackCommandControllerTest {
 
     @Test
     public void onReceiveSlashKeeperDismissReturnOkRichMessage() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
-        final String KEEPER_RESPONSE = "Keeper: @slack1 in direction: teems dismissed";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
+        final String KEEPER_RESPONSE = "Keeper: @slack1 in direction: teams dismissed";
 
-        when(keeperService.sendKeeperDismissRequest(any(String.class), any(String.class))).thenReturn(KEEPER_RESPONSE);
+        when(keeperService.sendKeeperDismissRequest("@from-user", KEEPER_DISMISS_COMMAND_TEXT))
+                .thenReturn(KEEPER_RESPONSE);
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text")
-                        .value("Keeper: @slack1 in direction: teems dismissed"));
+                        .value("Keeper: @slack1 in direction: teams dismissed"));
     }
 
     @Test
     public void onReceiveSlashKeeperDismissShouldReturnErrorMessageIfOccurException() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
 
         when(keeperService.sendKeeperDismissRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException("something went wrong"));
@@ -120,7 +122,7 @@ public class KeepersSlackCommandControllerTest {
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
 
         // when
-        when(keeperService.getKeeperDirections(any(String.class), any(String.class)))
+        when(keeperService.getKeeperDirections("@from-user", GET_DIRECTIONS_COMMAND_TEXT))
                 .thenReturn("The keeper @slack1 has no active directions.");
 
         // then
@@ -138,7 +140,7 @@ public class KeepersSlackCommandControllerTest {
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
 
         // when
-        when(keeperService.getKeeperDirections(any(String.class), any(String.class)))
+        when(keeperService.getKeeperDirections("@from-user", GET_DIRECTIONS_COMMAND_TEXT))
                 .thenReturn("The keeper @slack1 has active directions: [direction1, direction2]");
 
         // then

@@ -35,20 +35,21 @@ public class DefaultKeeperService implements KeeperService {
     public String sendKeeperAddRequest(String fromUser, String text) {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
-
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
-                receiveToUser(slackParsedCommand).getUuid(),
-                receiveToDirections(slackParsedCommand));
+                                                        receiveToUser(slackParsedCommand).getUuid(),
+                                                        receiveToDirections(slackParsedCommand));
 
         logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
         String[] ids = keeperRepository.addKeeper(keeperRequest);
         logger.info("Added Keeper: [{}]", Arrays.toString(ids));
 
-        String result = "ERROR. Something went wrong. Keeper was not created :(";
+        String result;
 
         if (ids.length > 0) {
             result = String.format("Thanks, we added a new Keeper: %s in direction: %s",
                     slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
+        } else {
+            result = "ERROR. Something went wrong. Keeper was not dismissed :(";
         }
         return result;
     }
@@ -58,18 +59,20 @@ public class DefaultKeeperService implements KeeperService {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
-                receiveToUser(slackParsedCommand).getUuid(),
-                receiveToDirections(slackParsedCommand));
+                                                        receiveToUser(slackParsedCommand).getUuid(),
+                                                        receiveToDirections(slackParsedCommand));
 
         logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
         String[] ids = keeperRepository.dismissKeeper(keeperRequest);
         logger.info("Dismissed Keeper: [{}]", Arrays.toString(ids));
 
-        String result = "ERROR. Something went wrong. Keeper was not dismissed :(";
+        String result;
 
         if (ids.length > 0) {
-            result = String.format("Keeper: %s in direction: %s dismissed" ,
+            result = String.format("Keeper: %s in direction: %s dismissed",
                     slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
+        } else {
+            result = "ERROR. Something went wrong. Keeper was not dismissed :(";
         }
         return result;
     }
@@ -78,26 +81,24 @@ public class DefaultKeeperService implements KeeperService {
     public String getKeeperDirections(String fromUser, String text) {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
-        KeeperRequest keeperRequest = new KeeperRequest(
-                slackParsedCommand.getFromUser().getUuid(),
-                slackParsedCommand.getFirstUserFromText().getUuid(),
-                slackParsedCommand.getTextWithoutSlackNames());
+        KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
+                                                        slackParsedCommand.getFirstUserFromText().getUuid(),
+                                                        slackParsedCommand.getTextWithoutSlackNames());
 
         logger.debug("Received request to get directions of keeper with uuid: [{}]", keeperRequest.toString());
         String[] directions = keeperRepository.getKeeperDirections(keeperRequest);
         logger.info("Received response from keeperRepository: [{}]", Arrays.toString(directions));
 
+        String result;
         String keeperSlackName = slackParsedCommand.getFirstUserFromText().getSlack();
-        String result = "ERROR. Something went wrong and we didn't get keeper directions";
 
         if (directions.length == 0) {
             result = "The keeper " + keeperSlackName + " has no active directions.";
-        }
-
-        if (directions.length > 0) {
+        } else if (directions.length > 0) {
             result = "The keeper " + keeperSlackName + " has active directions: " + Arrays.toString(directions);
+        } else {
+            result = "ERROR. Something went wrong and we didn't get keeper directions";
         }
-
         return result;
     }
 

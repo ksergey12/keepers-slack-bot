@@ -51,7 +51,7 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleKeepersAPIError() throws Exception {
 
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
@@ -78,7 +78,7 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleUserAPIError() throws Exception {
 
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
 
         Map<String, UserDTO> users = new HashMap<>();
         users.put(userFrom.getSlack(), userFrom);
@@ -104,7 +104,7 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleWrongCommandException() throws Exception {
 
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
 
         when(keeperService.sendKeeperAddRequest(any(String.class), any(String.class)))
                 .thenThrow(new WrongCommandFormatException("Wrong command exception"));
@@ -119,7 +119,7 @@ public class ExceptionsHandlerTest {
     @Test
     public void shouldHandleAllOtherException() throws Exception {
 
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
 
         when(keeperService.sendKeeperAddRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException("Runtime exception"));

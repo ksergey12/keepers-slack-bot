@@ -52,8 +52,8 @@ public class DefaultKeeperServiceTest {
     public void shouldSaveKeeperAndReturnValidText() {
         //given
         String[] expectedKeeperId = {"100"};
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teems";
-        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teems");
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
         when(keeperRepository.addKeeper(keeperRequest)).thenReturn(expectedKeeperId);
         when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT))
                 .thenReturn(new SlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT, users));
@@ -62,7 +62,7 @@ public class DefaultKeeperServiceTest {
         String result = keeperService.sendKeeperAddRequest("@from", KEEPER_ADD_COMMAND_TEXT);
 
         //then
-        assertEquals("Thanks, we added a new Keeper: @slack_name in direction: teems", result);
+        assertEquals("Thanks, we added a new Keeper: @slack_name in direction: teams", result);
         verify(keeperRepository).addKeeper(keeperRequest);
         verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT);
     }
@@ -71,8 +71,8 @@ public class DefaultKeeperServiceTest {
     public void shouldDismissKeeperAndReturnValidText() {
         //given
         String[] expectedKeeperId = {"100"};
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teems";
-        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teems");
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teams";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
         when(keeperRepository.dismissKeeper(keeperRequest)).thenReturn(expectedKeeperId);
         when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT))
                 .thenReturn(new SlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT, users));
@@ -81,7 +81,7 @@ public class DefaultKeeperServiceTest {
         String result = keeperService.sendKeeperDismissRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
 
         //then
-        assertEquals("Keeper: @slack_name in direction: teems dismissed", result);
+        assertEquals("Keeper: @slack_name in direction: teams dismissed", result);
         verify(keeperRepository).dismissKeeper(keeperRequest);
         verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT);
     }
