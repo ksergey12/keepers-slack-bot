@@ -15,9 +15,7 @@ import ua.com.juja.microservices.keepers.slackbot.exception.KeeperExchangeExcept
 import ua.com.juja.microservices.keepers.slackbot.model.request.KeeperRequest;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Nikolay Horushko
@@ -42,24 +40,28 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Override
     public String[] addKeeper(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest, HttpMethod.POST);
+        return getCommonResponse(keeperRequest, urlBaseKeeper + urlKeepers, HttpMethod.POST);
     }
 
     @Override
     public String[] dismissKeeper(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest, HttpMethod.PUT);
+        return getCommonResponse(keeperRequest, urlBaseKeeper + urlKeepers, HttpMethod.PUT);
     }
 
-    private String[] getCommonResponse(KeeperRequest keeperRequest, HttpMethod method) {
-        logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
+    @Override
+    public String[] getKeeperDirections(KeeperRequest keeperRequest) {
+        return getCommonResponse(keeperRequest,urlBaseKeeper + "/" + keeperRequest.getUuid(), HttpMethod.GET);
+    }
+
+    private String[] getCommonResponse(KeeperRequest keeperRequest, String url, HttpMethod method) {
+        logger.debug("Received KeeperRequest: [{}], url: [{}], HttpMethod: [{}] ", keeperRequest.toString(), url, method.name());
 
         HttpEntity<KeeperRequest> request = new HttpEntity<>(keeperRequest, setupBaseHttpHeaders());
         String[] result;
 
         try {
             logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
-            ResponseEntity<String[]> response = restTemplate.exchange(urlBaseKeeper + urlKeepers,
-                    method, request, String[].class);
+            ResponseEntity<String[]> response = restTemplate.exchange(url, method, request, String[].class);
             result = response.getBody();
             logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());
         } catch (HttpClientErrorException ex) {
@@ -68,28 +70,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
             throw new KeeperExchangeException(error, ex);
         }
 
-        logger.info("Saved Keeper: [{}]", Arrays.toString(result));
-        return result;
-    }
-
-    @Override
-    public List<String> getKeeperDirections(KeeperRequest keeperRequest) {
-        HttpEntity<KeeperRequest> request = new HttpEntity<>(keeperRequest, setupBaseHttpHeaders());
-        List<String> result = new ArrayList<>();
-
-        try {
-            logger.debug("Started request to Keepers service. Request is : [{}]", request.toString());
-            ResponseEntity<String[]> response = restTemplate.exchange(
-                    urlBaseKeeper + "/" + keeperRequest.getUuid(), HttpMethod.GET, request, String[].class);
-            result = Arrays.asList(response.getBody());
-            logger.debug("Finished request to Keepers service. Response is: [{}]", response.toString());
-        } catch (HttpClientErrorException ex) {
-            ApiError error = convertToApiError(ex);
-            logger.warn("Keepers service returned an error: [{}]", error);
-            throw new KeeperExchangeException(convertToApiError(ex), ex);
-        }
-
-        logger.info("Got keeper directions: [{}]", result.toString());
+        logger.info("KeeperRepository processed result: [{}]", Arrays.toString(result));
         return result;
     }
 }

@@ -77,14 +77,14 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void onReceiveSlashCommandKeeperAddReturnOkRichMessage() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
                 "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
                 "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
-                "\"direction\":\"teems\"" +
+                "\"direction\":\"teams\"" +
                 "}";
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
@@ -92,7 +92,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teems";
+        final String EXPECTED_RESPONSE_TO_SLACK = "Thanks, we added a new Keeper: @slack1 in direction: teams";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
@@ -103,11 +103,11 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnErrorMessageIfKeeperAddCommandConsistTwoOrMoreSlackNames() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 @slack2 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 @slack2 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teams' " +
                 "You can not perform actions with several slack names.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
@@ -119,11 +119,11 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnErrorMessageIfKeeperAddCommandConsistTwoOrMoreDirections() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems else";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams else";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teams else' " +
                 "You can perform the action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
@@ -151,7 +151,7 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnClientErrorMessageForKeeperAddWhenUserServiceIsFail() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockFailUsersService(usersInCommand);
 
@@ -166,14 +166,14 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnClientErrorMessageForKeeperAddWhenKeepersServiceIsFail() throws Exception {
-        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
                 "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
                 "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
-                "\"direction\":\"teems\"" +
+                "\"direction\":\"teams\"" +
                 "}";
 
         mockFailKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.POST, EXPECTED_REQUEST_TO_KEEPERS);
@@ -291,14 +291,14 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void onReceiveSlashCommandKeeperDismissReturnOkRichMessage() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
                 "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
                 "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
-                "\"direction\":\"teems\"" +
+                "\"direction\":\"teams\"" +
                 "}";
 
         final String EXPECTED_RESPONSE_FROM_KEEPERS= "[\"1000\"]";
@@ -306,7 +306,7 @@ public class KeeperSlackBotIntegrationTest {
         mockSuccessKeepersService(urlBaseKeeper + urlKeepers,  HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS,
                 EXPECTED_RESPONSE_FROM_KEEPERS);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "Keeper: @slack1 in direction: teems dismissed";
+        final String EXPECTED_RESPONSE_TO_SLACK = "Keeper: @slack1 in direction: teams dismissed";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
                 SlackUrlUtils.getUriVars("slashCommandToken", "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
@@ -317,11 +317,11 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnErrorMessageIfKeeperDismissCommandConsistTwoOrMoreSlackNames() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 @slack2 teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 @slack2 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, user2, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teems' " +
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found 2 slack names in your command: '@slack1 @slack2 teams' " +
                 "You can not perform actions with several slack names.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
@@ -333,11 +333,11 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnErrorMessageIfKeeperDismissCommandConsistTwoOrMoreDirections() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems else";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams else";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
-        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teems else' " +
+        final String EXPECTED_RESPONSE_TO_SLACK = "We found several directions in your command: 'teams else' " +
                 "You can perform the action with keepers on one direction only.";
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
@@ -365,7 +365,7 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnClientErrorMessageForKeeperDismissWhenUserServiceIsFail() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockFailUsersService(usersInCommand);
 
@@ -380,14 +380,14 @@ public class KeeperSlackBotIntegrationTest {
 
     @Test
     public void returnClientErrorMessageForKeeperDismissWhenKeepersServiceIsFail() throws Exception {
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teems";
+        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
         final List<UserDTO> usersInCommand = Arrays.asList(new UserDTO[]{user1, userFrom});
         mockSuccessUsersService(usersInCommand);
 
         final String EXPECTED_REQUEST_TO_KEEPERS = "{" +
                 "\"from\":\"f2034f11-561a-4e01-bfcf-ec615c1ba61a\"," +
                 "\"uuid\":\"f2034f22-562b-4e02-bfcf-ec615c1ba62b\"," +
-                "\"direction\":\"teems\"" +
+                "\"direction\":\"teams\"" +
                 "}";
 
         mockFailKeepersService(urlBaseKeeper + urlKeepers, HttpMethod.PUT, EXPECTED_REQUEST_TO_KEEPERS);
