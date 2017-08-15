@@ -9,6 +9,7 @@ import ua.com.juja.microservices.keepers.slackbot.service.UserService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -38,12 +39,15 @@ public class SlackNameHandlerService {
         this.userService = userService;
     }
 
-    public SlackParsedCommand createSlackParsedCommand(String fromSlackName, String text) {
-        if (!fromSlackName.startsWith("@")) {
-            logger.debug("add '@' to slack name: [{}]", fromSlackName);
-            fromSlackName = "@" + fromSlackName;
+    public SlackParsedCommand createSlackParsedCommand(String fromUser, String text) {
+        if (!fromUser.startsWith("@")) {
+            logger.debug("add '@' to slack name [{}]", fromUser);
         }
-        return new SlackParsedCommand(fromSlackName, text, receiveUsersMap(fromSlackName, text));
+        Map<String, UserDTO> usersMap = receiveUsersMap(fromUser, text);
+        UserDTO fromUserDTO = usersMap.get("fromUser");
+        usersMap.remove("fromUser");
+
+        return new SlackParsedCommand(fromUserDTO, text, new ArrayList<>(usersMap.values()));
     }
 
     private Map<String, UserDTO> receiveUsersMap(String fromSlackName, String text) {
