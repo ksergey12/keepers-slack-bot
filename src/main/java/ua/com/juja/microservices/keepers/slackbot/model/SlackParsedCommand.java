@@ -12,12 +12,10 @@ import java.util.*;
 /**
  * @author Konstantin Sergey
  */
-@ToString(exclude = {"slackNamePattern", "logger"})
+@ToString(exclude = {"SLACK_NAME_PATTERN", "logger"})
 public class SlackParsedCommand {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Value("${slackNamePattern}")
-    private String slackNamePattern;
+    private final String SLACK_NAME_PATTERN = "@([a-zA-z0-9\\.\\_\\-]){1,21}";
     private UserDTO fromUser;
     private String text;
     private List<UserDTO> usersInText;
@@ -29,7 +27,7 @@ public class SlackParsedCommand {
         this.usersInText = usersInText;
         userCountInText = usersInText.size();
         if (userCountInText == 0) {
-            logger.warn("The text: [{}] doesn't contain slack name", text);
+            logger.warn("The text: '{}' doesn't contain any slack names", text);
             throw new WrongCommandFormatException(String.format("The text '%s' doesn't contain any slack names", text));
         }
         logger.debug("SlackParsedCommand created with parameters: " +
@@ -46,7 +44,7 @@ public class SlackParsedCommand {
     }
 
     public String getTextWithoutSlackNames() {
-        String result = text.replaceAll(slackNamePattern, "");
+        String result = text.replaceAll(SLACK_NAME_PATTERN, "");
         result = result.replaceAll("\\s+", " ").trim();
         return result;
     }

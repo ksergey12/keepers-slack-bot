@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Nikolay Horushko
+ * @author Konstantin Sergey
  */
 @Service
 public class SlackNameHandlerService {
@@ -32,8 +33,7 @@ public class SlackNameHandlerService {
      * ([a-z0-9\.\_\-]){1,21}
      * quick test regExp http://regexr.com/
      */
-    @Value("${slackNamePattern}")
-    private String slackNamePattern;
+    private final String SLACK_NAME_PATTERN = "@([a-zA-z0-9\\.\\_\\-]){1,21}";
 
     @Inject
     public SlackNameHandlerService(UserService userService) {
@@ -63,7 +63,7 @@ public class SlackNameHandlerService {
 
     private List<String> receiveAllSlackNames(String text) {
         List<String> result = new ArrayList<>();
-        Pattern pattern = Pattern.compile(slackNamePattern);
+        Pattern pattern = Pattern.compile(SLACK_NAME_PATTERN);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             result.add(matcher.group());
