@@ -7,9 +7,8 @@ import org.junit.rules.ExpectedException;
 import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
@@ -18,24 +17,26 @@ import static org.junit.Assert.*;
  * @author Konstantin Sergey
  */
 public class SlackParsedCommandTest {
-    private Map<String, UserDTO> users;
+    private List<UserDTO> usersInText;
+    private UserDTO fromUser;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() {
-        users = new HashMap<>();
-        users.put("@from", new UserDTO("uuid0", "@from"));
-        users.put("@slack1", new UserDTO("uuid1", "@slack1"));
-        users.put("@slack2", new UserDTO("uuid2", "@slack2"));
+        fromUser = new UserDTO("uuid0", "@from");
+        usersInText = new ArrayList<>();
+        usersInText.add(new UserDTO("uuid1", "@slack1"));
+        usersInText.add(new UserDTO("uuid2", "@slack2"));
+        usersInText.add(new UserDTO("uuid3", "@slack3"));
     }
 
     @Test
     public void getFirstUserInText() {
         //given
         String text = "text text @slack1 text";
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
         UserDTO result = slackParsedCommand.getFirstUserFromText();
         //then
@@ -46,10 +47,11 @@ public class SlackParsedCommandTest {
     public void getFirstUserInTextThrowExceptionIfNotUser() {
         //given
         String text = "text text text";
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        usersInText.clear();
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //then
         thrown.expect(WrongCommandFormatException.class);
-        thrown.expectMessage(containsString("The text 'text text text' doesn't contain any slackName"));
+        thrown.expectMessage(containsString("The text 'text text text' doesn't contain any slack names"));
         //when
         slackParsedCommand.getFirstUserFromText();
     }
@@ -57,12 +59,13 @@ public class SlackParsedCommandTest {
     @Test
     public void getAllUsers() {
         //given
-        String text = "text @slack2 text@slack1 text";
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        String text = "text @slack3 text@slack2 text @slack1";
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
         List<UserDTO> result = slackParsedCommand.getAllUsersFromText();
         //then
-        assertEquals("[UserDTO(uuid=uuid2, slack=@slack2), UserDTO(uuid=uuid1, slack=@slack1)]",
+        assertEquals("[UserDTO(uuid=uuid1, slack=@slack1), UserDTO(uuid=uuid2, slack=@slack2)," +
+                        " UserDTO(uuid=uuid3, slack=@slack3)]",
                 result.toString());
     }
 
@@ -70,7 +73,7 @@ public class SlackParsedCommandTest {
     public void getText() {
         //given
         String text = "text";
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
         String result = slackParsedCommand.getText();
         //then
@@ -81,7 +84,7 @@ public class SlackParsedCommandTest {
     public void getFromUser() {
         //given
         String text = "text";
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("from", text, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
         UserDTO result = slackParsedCommand.getFromUser();
         //then
@@ -91,14 +94,11 @@ public class SlackParsedCommandTest {
     @Test
     public void getUserCount() {
         //given
-        String text1 = "text @slack text";
-        String text2 = "@slack text @slack text @slack";
+        String text = "text @slack text";
         //when
-        SlackParsedCommand slackParsedCommand1 = new SlackParsedCommand("@from", text1, users);
-        SlackParsedCommand slackParsedCommand2 = new SlackParsedCommand("@from", text2, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //then
-        assertEquals(1, slackParsedCommand1.getUserCountInText());
-        assertEquals(3, slackParsedCommand2.getUserCountInText());
+        assertEquals(3, slackParsedCommand.getUserCountInText());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SlackParsedCommandTest {
         //given
         String text = "   @slack text  @slack text @slack ";
         //when
-        SlackParsedCommand slackParsedCommand = new SlackParsedCommand("@from", text, users);
+        SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //then
         assertEquals("text text", slackParsedCommand.getTextWithoutSlackNames());
     }
