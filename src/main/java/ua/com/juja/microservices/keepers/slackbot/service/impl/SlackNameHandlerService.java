@@ -10,6 +10,7 @@ import ua.com.juja.microservices.keepers.slackbot.service.UserService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,8 +46,8 @@ public class SlackNameHandlerService {
             logger.debug("add '@' to slack name [{}]", fromUser);
         }
         Map<String, UserDTO> usersMap = receiveUsersMap(fromUser, text);
-        UserDTO fromUserDTO = usersMap.get("fromUser");
-        usersMap.remove("fromUser");
+        UserDTO fromUserDTO = usersMap.get(fromUser);
+        usersMap.remove(fromUser);
 
         return new SlackParsedCommand(fromUserDTO, text, new ArrayList<>(usersMap.values()));
     }
