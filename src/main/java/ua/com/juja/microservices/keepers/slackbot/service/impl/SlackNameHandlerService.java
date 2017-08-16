@@ -2,6 +2,7 @@ package ua.com.juja.microservices.keepers.slackbot.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ua.com.juja.microservices.keepers.slackbot.model.SlackParsedCommand;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
@@ -9,7 +10,6 @@ import ua.com.juja.microservices.keepers.slackbot.service.UserService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +32,8 @@ public class SlackNameHandlerService {
      * ([a-z0-9\.\_\-]){1,21}
      * quick test regExp http://regexr.com/
      */
-    private final String SLACK_NAME_PATTERN = "@([a-zA-z0-9\\.\\_\\-]){1,21}";
+    @Value("${slackNamePattern}")
+    private String slackNamePattern;
 
     @Inject
     public SlackNameHandlerService(UserService userService) {
@@ -62,7 +63,7 @@ public class SlackNameHandlerService {
 
     private List<String> receiveAllSlackNames(String text) {
         List<String> result = new ArrayList<>();
-        Pattern pattern = Pattern.compile(SLACK_NAME_PATTERN);
+        Pattern pattern = Pattern.compile(slackNamePattern);
         Matcher matcher = pattern.matcher(text);
         while (matcher.find()) {
             result.add(matcher.group());
