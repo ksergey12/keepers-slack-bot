@@ -27,14 +27,12 @@ public class SlackParsedCommandTest {
     public void setup() {
         fromUser = new UserDTO("uuid0", "@from");
         usersInText = new ArrayList<>();
-        usersInText.add(new UserDTO("uuid1", "@slack1"));
-        usersInText.add(new UserDTO("uuid2", "@slack2"));
-        usersInText.add(new UserDTO("uuid3", "@slack3"));
     }
 
     @Test
     public void getFirstUserInText() {
         //given
+        usersInText.add(new UserDTO("uuid1", "@slack1"));
         String text = "text text @slack1 text";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
@@ -47,7 +45,6 @@ public class SlackParsedCommandTest {
     public void getFirstUserInTextThrowExceptionIfNotUser() {
         //given
         String text = "text text text";
-        usersInText.clear();
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //then
         thrown.expect(WrongCommandFormatException.class);
@@ -59,6 +56,9 @@ public class SlackParsedCommandTest {
     @Test
     public void getAllUsers() {
         //given
+        usersInText.add(new UserDTO("uuid1", "@slack1"));
+        usersInText.add(new UserDTO("uuid2", "@slack2"));
+        usersInText.add(new UserDTO("uuid3", "@slack3"));
         String text = "text @slack3 text@slack2 text @slack1";
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //when
@@ -94,11 +94,12 @@ public class SlackParsedCommandTest {
     @Test
     public void getUserCount() {
         //given
-        String text = "text @slack text";
+        usersInText.add(new UserDTO("uuid1", "@slack1"));
+        String text = "text @slack1 text";
         //when
         SlackParsedCommand slackParsedCommand = new SlackParsedCommand(fromUser, text, usersInText);
         //then
-        assertEquals(3, slackParsedCommand.getUserCountInText());
+        assertEquals(1, slackParsedCommand.getUserCountInText());
     }
 
     @Test
