@@ -11,7 +11,9 @@ import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.service.UserService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -49,12 +51,12 @@ public class SlackNameHandlerServiceTest {
         List<String> requestToUserService = Arrays.asList(new String[]{user1.getSlack(), userFrom.getSlack()});
         List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom, user1});
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
+        SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, Collections.singletonList(user1));
         //when
-        SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
+        SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
-        assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                "text=text @slack1 TexT text., usersInText=[UserDTO(uuid=AAA111, slack=@slack1)])",
-                slackParsedCommand.toString());
+        assertEquals(expected, actual);
+        assertTrue(expected.hashCode() == actual.hashCode());
     }
 
     @Test
@@ -64,13 +66,12 @@ public class SlackNameHandlerServiceTest {
         List<String> requestToUserService = Arrays.asList(new String[]{user1.getSlack(), user2.getSlack(), userFrom.getSlack()});
         List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom, user1, user2});
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
+        SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, Arrays.asList(user1, user2));
         //when
-        SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
+        SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
-        assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                        "text=text @slack1 TexT @slack2 text., usersInText=[UserDTO(uuid=AAA111, " +
-                        "slack=@slack1), UserDTO(uuid=AAA222, slack=@slack2)])",
-                slackParsedCommand.toString());
+        assertEquals(expected, actual);
+        assertTrue(expected.hashCode() == actual.hashCode());
     }
 
     @Test
@@ -80,11 +81,11 @@ public class SlackNameHandlerServiceTest {
         List<String> requestToUserService = Arrays.asList(new String[]{userFrom.getSlack()});
         List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom});
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
+        SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, new ArrayList<>());
         //when
-        SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
+        SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
-        assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                "text=text without slack name TexT text., usersInText=[])",
-                slackParsedCommand.toString());
+        assertEquals(expected, actual);
+        assertTrue(expected.hashCode() == actual.hashCode());
     }
 }

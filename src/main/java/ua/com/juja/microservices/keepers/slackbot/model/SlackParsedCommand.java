@@ -3,7 +3,6 @@ package ua.com.juja.microservices.keepers.slackbot.model;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
@@ -59,5 +58,25 @@ public class SlackParsedCommand {
 
     public int getUserCountInText() {
         return usersInText.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SlackParsedCommand that = (SlackParsedCommand) o;
+
+        if (fromUser != null ? !fromUser.equals(that.fromUser) : that.fromUser != null) return false;
+        if (text != null ? !text.equals(that.text) : that.text != null) return false;
+        return usersInText != null ? usersInText.equals(that.usersInText) : that.usersInText == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fromUser != null ? fromUser.hashCode() : 0;
+        result = 31 * result + (text != null ? text.hashCode() : 0);
+        result = 31 * result + (usersInText != null ? usersInText.hashCode() : 0);
+        return result;
     }
 }
