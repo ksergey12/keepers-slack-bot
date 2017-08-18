@@ -53,8 +53,8 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                "text=text @slack1 TexT text., usersInText=[UserDTO(uuid=AAA111, slack=@slack1)], " +
-                "userCountInText=1)", slackParsedCommand.toString());
+                "text=text @slack1 TexT text., usersInText=[UserDTO(uuid=AAA111, slack=@slack1)])",
+                slackParsedCommand.toString());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class SlackNameHandlerServiceTest {
         //then
         assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
                         "text=text @slack1 TexT @slack2 text., usersInText=[UserDTO(uuid=AAA111, " +
-                        "slack=@slack1), UserDTO(uuid=AAA222, slack=@slack2)], userCountInText=2)",
+                        "slack=@slack1), UserDTO(uuid=AAA222, slack=@slack2)])",
                 slackParsedCommand.toString());
     }
 
@@ -84,7 +84,7 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals("SlackParsedCommand(fromUser=UserDTO(uuid=AAA000, slack=@slackFrom), " +
-                "text=text without slack name TexT text., usersInText=[], userCountInText=0)",
+                "text=text without slack name TexT text., usersInText=[])",
                 slackParsedCommand.toString());
     }
 }

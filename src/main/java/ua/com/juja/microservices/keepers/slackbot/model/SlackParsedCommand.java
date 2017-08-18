@@ -19,17 +19,15 @@ public class SlackParsedCommand {
     private UserDTO fromUser;
     private String text;
     private List<UserDTO> usersInText;
-    private int userCountInText;
 
     public SlackParsedCommand(UserDTO fromUser, String text, List<UserDTO> usersInText) {
         this.fromUser = fromUser;
         this.text = text;
         this.usersInText = usersInText;
-        userCountInText = usersInText.size();
 
         logger.debug("SlackParsedCommand created with parameters: " +
                         "fromSlackName: {} text: {} userCountInText {} users: {}",
-                fromUser, text, userCountInText, usersInText.toString());
+                fromUser, text, usersInText.size(), usersInText.toString());
     }
 
     public List<UserDTO> getAllUsersFromText() {
@@ -37,7 +35,7 @@ public class SlackParsedCommand {
     }
 
     public UserDTO getFirstUserFromText() {
-        if (userCountInText == 0) {
+        if (usersInText.size() == 0) {
             logger.warn("The text: '{}' doesn't contain any slack names", text);
             throw new WrongCommandFormatException(String.format("The text '%s' doesn't contain any slack names", text));
         } else {
@@ -60,6 +58,6 @@ public class SlackParsedCommand {
     }
 
     public int getUserCountInText() {
-        return userCountInText;
+        return usersInText.size();
     }
 }
