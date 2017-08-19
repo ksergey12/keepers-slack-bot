@@ -56,7 +56,6 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals(expected, actual);
-        assertTrue(expected.hashCode() == actual.hashCode());
     }
 
     @Test
@@ -71,7 +70,6 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals(expected, actual);
-        assertTrue(expected.hashCode() == actual.hashCode());
     }
 
     @Test
@@ -86,6 +84,5 @@ public class SlackNameHandlerServiceTest {
         SlackParsedCommand actual = slackNameHandlerService.createSlackParsedCommand(userFrom.getSlack(), text);
         //then
         assertEquals(expected, actual);
-        assertTrue(expected.hashCode() == actual.hashCode());
     }
 }
