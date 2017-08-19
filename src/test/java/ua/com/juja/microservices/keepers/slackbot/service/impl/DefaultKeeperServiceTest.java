@@ -38,14 +38,15 @@ public class DefaultKeeperServiceTest {
     @Inject
     private KeeperService keeperService;
 
-    private Map<String, UserDTO> users;
+    private List<UserDTO> usersInText;
+    UserDTO fromUser;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        users = new HashMap<>();
-        users.put("@from", new UserDTO("uuid0", "@from"));
-        users.put("@slack_name", new UserDTO("uuid1", "@slack_name"));
+        fromUser = new UserDTO("uuid0", "@from");
+        usersInText = new ArrayList<>();
+        usersInText.add(new UserDTO("uuid1", "@slack_name"));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class DefaultKeeperServiceTest {
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
         when(keeperRepository.addKeeper(keeperRequest)).thenReturn(expectedKeeperId);
         when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT))
-                .thenReturn(new SlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT, users));
+                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_ADD_COMMAND_TEXT, usersInText));
 
         //when
         String result = keeperService.sendKeeperAddRequest("@from", KEEPER_ADD_COMMAND_TEXT);
@@ -75,7 +76,7 @@ public class DefaultKeeperServiceTest {
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
         when(keeperRepository.dismissKeeper(keeperRequest)).thenReturn(expectedKeeperId);
         when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT))
-                .thenReturn(new SlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT, users));
+                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_DISMISS_COMMAND_TEXT, usersInText));
 
         //when
         String result = keeperService.sendKeeperDismissRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
@@ -94,7 +95,7 @@ public class DefaultKeeperServiceTest {
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "");
         when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(expected);
         when(slackNameHandlerService.createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT))
-                .thenReturn(new SlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT, users));
+                .thenReturn(new SlackParsedCommand(fromUser, GET_KEEPER_DIRECTIONS_COMMAND_TEXT, usersInText));
 
         //When
         String result = keeperService.getKeeperDirections("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
@@ -113,7 +114,7 @@ public class DefaultKeeperServiceTest {
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "");
         when(keeperRepository.getKeeperDirections(keeperRequest)).thenReturn(emptyArray);
         when(slackNameHandlerService.createSlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT))
-                .thenReturn(new SlackParsedCommand("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT, users));
+                .thenReturn(new SlackParsedCommand(fromUser, GET_KEEPER_DIRECTIONS_COMMAND_TEXT, usersInText));
 
         //When
         String result = keeperService.getKeeperDirections("@from", GET_KEEPER_DIRECTIONS_COMMAND_TEXT);
