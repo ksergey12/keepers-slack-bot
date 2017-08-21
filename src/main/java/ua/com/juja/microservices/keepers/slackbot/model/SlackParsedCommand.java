@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
@@ -29,7 +28,7 @@ public class SlackParsedCommand {
         this.text = text;
         this.usersInText = usersInText;
         slackNamePattern = getProperty(
-                "src/main/resources/application.properties",
+                "application.properties",
                 "keepers.slackNamePattern"
         );
         logger.debug("SlackParsedCommand created with parameters: " +
@@ -70,8 +69,9 @@ public class SlackParsedCommand {
 
     private String getProperty(String propertyFile, String propertyName) {
         Properties properties = new Properties();
+        ClassLoader loader = SlackParsedCommand.class.getClassLoader();
         try {
-            properties.load(new FileInputStream(propertyFile));
+            properties.load(loader.getResourceAsStream(propertyFile));
         } catch (IOException e) {
             e.printStackTrace();
         }
