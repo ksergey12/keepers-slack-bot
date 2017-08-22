@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
+import ua.com.juja.microservices.keepers.slackbot.utils.Utils;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author Konstantin Sergey
@@ -27,7 +26,7 @@ public class SlackParsedCommand {
         this.fromUser = fromUser;
         this.text = text;
         this.usersInText = usersInText;
-        slackNamePattern = getProperty(
+        slackNamePattern = Utils.getProperty(
                 "application.properties",
                 "keepers.slackNamePattern"
         );
@@ -65,16 +64,5 @@ public class SlackParsedCommand {
 
     public int getUserCountInText() {
         return usersInText.size();
-    }
-
-    private String getProperty(String propertyFile, String propertyName) {
-        Properties properties = new Properties();
-        ClassLoader loader = SlackParsedCommand.class.getClassLoader();
-        try {
-            properties.load(loader.getResourceAsStream(propertyFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return properties.getProperty(propertyName);
     }
 }
