@@ -6,17 +6,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatException;
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
+import ua.com.juja.microservices.keepers.slackbot.utils.Utils;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Konstantin Sergey
  */
-@ToString(exclude = {"SLACK_NAME_PATTERN", "logger"})
+@ToString(exclude = {"slackNamePattern", "logger"})
 @EqualsAndHashCode
 public class SlackParsedCommand {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final String SLACK_NAME_PATTERN = "@([a-zA-z0-9\\.\\_\\-]){1,21}";
+    private String slackNamePattern;
     private UserDTO fromUser;
     private String text;
     private List<UserDTO> usersInText;
@@ -25,7 +26,10 @@ public class SlackParsedCommand {
         this.fromUser = fromUser;
         this.text = text;
         this.usersInText = usersInText;
-
+        slackNamePattern = Utils.getProperty(
+                "application.properties",
+                "keepers.slackNamePattern"
+        );
         logger.debug("SlackParsedCommand created with parameters: " +
                         "fromSlackName: {} text: {} userCountInText {} users: {}",
                 fromUser, text, usersInText.size(), usersInText.toString());
@@ -45,7 +49,7 @@ public class SlackParsedCommand {
     }
 
     public String getTextWithoutSlackNames() {
-        String result = text.replaceAll(SLACK_NAME_PATTERN, "");
+        String result = text.replaceAll(slackNamePattern, "");
         result = result.replaceAll("\\s+", " ").trim();
         return result;
     }
