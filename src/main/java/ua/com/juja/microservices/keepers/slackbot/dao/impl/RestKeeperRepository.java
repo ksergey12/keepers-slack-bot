@@ -44,7 +44,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
     }
 
     @Override
-    public String[] dismissKeeper(KeeperRequest keeperRequest) {
+    public String[] deactivateKeeper(KeeperRequest keeperRequest) {
         return getCommonResponse(keeperRequest, urlBaseKeeper + urlKeepers, HttpMethod.PUT);
     }
 
