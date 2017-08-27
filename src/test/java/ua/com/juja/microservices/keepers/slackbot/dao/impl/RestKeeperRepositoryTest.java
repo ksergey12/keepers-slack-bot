@@ -98,7 +98,7 @@ public class RestKeeperRepositoryTest {
     }
 
     @Test
-    public void shouldReturnKeeperIdWhenSendDismissKeeperToKeepersService() {
+    public void shouldReturnKeeperIdWhenSendDeactivateKeeperToKeepersService() {
         //given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
@@ -108,7 +108,7 @@ public class RestKeeperRepositoryTest {
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
                 .andRespond(withSuccess("[\"1000\"]", MediaType.APPLICATION_JSON));
         //when
-        String[] result = keeperRepository.dismissKeeper(new KeeperRequest("qwer", "67ui", "teams"));
+        String[] result = keeperRepository.deactivateKeeper(new KeeperRequest("qwer", "67ui", "teams"));
 
         // then
         mockServer.verify();
@@ -117,7 +117,7 @@ public class RestKeeperRepositoryTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenSendDismissKeeperToKeepersServiceThrowException() {
+    public void shouldThrowExceptionWhenSendDeactivateKeeperToKeepersServiceThrowException() {
         // given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
@@ -133,7 +133,7 @@ public class RestKeeperRepositoryTest {
         thrown.expect(KeeperExchangeException.class);
         thrown.expectMessage(containsString("Oops something went wrong :("));
         //when
-        keeperRepository.dismissKeeper(new KeeperRequest("qwer", "67ui", "teams"));
+        keeperRepository.deactivateKeeper(new KeeperRequest("qwer", "67ui", "teams"));
     }
 
     @Test

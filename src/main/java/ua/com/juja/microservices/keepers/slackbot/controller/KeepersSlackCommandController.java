@@ -26,7 +26,7 @@ import java.io.PrintWriter;
 @RestController
 @RequestMapping("/commands/keeper")
 public class KeepersSlackCommandController {
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final String SORRY_MESSAGE = "Sorry! You're not lucky enough to use our slack command.";
     private final String IN_PROGRESS = "In progress...";
@@ -51,50 +51,50 @@ public class KeepersSlackCommandController {
                          @RequestParam("response_url") String responseUrl,
                          HttpServletResponse httpServletResponse) throws IOException {
         try {
-            LOGGER.debug("Received slash command KeeperAdd: from user: [{}] command: [{}] token: [{}] responseUrl: [{}]",
+            logger.debug("Received slash command KeeperAdd: from user: [{}] command: [{}] token: [{}] responseUrl: [{}]",
                     fromUser, text, token, responseUrl);
 
             if (!token.equals(slackToken)) {
-                LOGGER.warn("Received invalid slack token: [{}] in command KeeperAdd for user: [{}]", token, fromUser);
+                logger.warn("Received invalid slack token: [{}] in command KeeperAdd for user: [{}]", token, fromUser);
                 sendQuickResponse(httpServletResponse, SORRY_MESSAGE);
             } else {
                 sendQuickResponse(httpServletResponse, IN_PROGRESS);
                 String response = keeperService.sendKeeperAddRequest(fromUser, text);
-                LOGGER.info("KeeperAdd command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
+                logger.info("KeeperAdd command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
                         fromUser, text, response);
                 sendDelayedResponse(responseUrl, response);
             }
         } catch (BaseBotException bex){
-            sendBBEMessage(responseUrl, bex);
+            sendBaseBotExceptionMessage(responseUrl, bex);
         } catch (Exception ex){
-            sendEMessage(responseUrl, ex);
+            sendExceptionMessage(responseUrl, ex);
         }
     }
 
-    @PostMapping(value = "/dismiss", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public void dismissKeeper(@RequestParam("token") String token,
-                             @RequestParam("user_name") String fromUser,
-                             @RequestParam("text") String text,
-                             @RequestParam("response_url") String responseUrl,
-                             HttpServletResponse httpServletResponse) {
+    @PostMapping(value = "/deactivate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void deactivateKeeper(@RequestParam("token") String token,
+                                 @RequestParam("user_name") String fromUser,
+                                 @RequestParam("text") String text,
+                                 @RequestParam("response_url") String responseUrl,
+                                 HttpServletResponse httpServletResponse) {
         try {
-            LOGGER.debug("Received slash command KeeperDismiss: from user: [{}] command: [{}] token: [{}]",
+            logger.debug("Received slash command KeeperDeactivate: from user: [{}] command: [{}] token: [{}]",
                     fromUser, text, token);
 
             if (!token.equals(slackToken)) {
-                LOGGER.warn("Received invalid slack token: [{}] in command KeeperDismiss for user: [{}]", token, fromUser);
+                logger.warn("Received invalid slack token: [{}] in command KeeperDeactivate for user: [{}]", token, fromUser);
                 sendQuickResponse(httpServletResponse, SORRY_MESSAGE);
             } else {
                 sendQuickResponse(httpServletResponse, IN_PROGRESS);
-                String response = keeperService.sendKeeperDismissRequest(fromUser, text);
-                LOGGER.info("KeeperDismiss command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
+                String response = keeperService.sendKeeperDeactivateRequest(fromUser, text);
+                logger.info("KeeperDeactivate command processed : user: [{}] text: [{}] and sent response into slack: [{}]",
                         fromUser, text, response);
                 sendDelayedResponse(responseUrl, response);
             }
         } catch (BaseBotException bex){
-            sendBBEMessage(responseUrl, bex);
+            sendBaseBotExceptionMessage(responseUrl, bex);
         } catch (Exception ex){
-            sendEMessage(responseUrl, ex);
+            sendExceptionMessage(responseUrl, ex);
         }
     }
 
@@ -105,23 +105,23 @@ public class KeepersSlackCommandController {
                                    @RequestParam("response_url") String responseUrl,
                                    HttpServletResponse httpServletResponse) {
         try {
-            LOGGER.debug("Received slash command GetKeeperDirections: from user: [{}] command: [{}] token: [{}]",
+            logger.debug("Received slash command GetKeeperDirections: from user: [{}] command: [{}] token: [{}]",
                     fromUser, text, token);
 
             if (!token.equals(slackToken)) {
-                LOGGER.warn("Received invalid slack token: [{}] in command Keeper for user: [{}]", token, fromUser);
+                logger.warn("Received invalid slack token: [{}] in command Keeper for user: [{}]", token, fromUser);
                 sendQuickResponse(httpServletResponse, SORRY_MESSAGE);
             } else {
                 sendQuickResponse(httpServletResponse, IN_PROGRESS);
                 String response = keeperService.getKeeperDirections(fromUser, text);
-                LOGGER.info("GetKeeperDirections command processed : user: [{}] text: [{}] and sent response to slack: [{}]",
+                logger.info("GetKeeperDirections command processed : user: [{}] text: [{}] and sent response to slack: [{}]",
                         fromUser, text, response);
                 sendDelayedResponse(responseUrl, response);
             }
         } catch (BaseBotException bex){
-            sendBBEMessage(responseUrl, bex);
+            sendBaseBotExceptionMessage(responseUrl, bex);
         } catch (Exception ex){
-            sendEMessage(responseUrl, ex);
+            sendExceptionMessage(responseUrl, ex);
         }
     }
 
@@ -131,31 +131,31 @@ public class KeepersSlackCommandController {
             printWriter.print(message);
             printWriter.flush();
         }
-        LOGGER.info("Sent a quick response with message '{}'", message);
+        logger.info("Sent a quick response with message '{}'", message);
     }
 
     private void sendDelayedResponse(String responseUrl, String response) {
         String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(response), String.class);
-        LOGGER.info("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
+        logger.info("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
     }
 
-    private void sendBBEMessage(String responseUrl, BaseBotException bex) {
-        LOGGER.warn("There was an exceptional situation: [{}]", bex.detailMessage());
+    private void sendBaseBotExceptionMessage(String responseUrl, BaseBotException bex) {
+        logger.warn("There was an exceptional situation: [{}]", bex.detailMessage());
         try {
             String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(bex.getMessage()), String.class);
-            LOGGER.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
+            logger.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
         } catch (Exception e){
-            LOGGER.warn("Nested exception: [{}]", e.getMessage());
+            logger.warn("Nested exception: [{}]", e.getMessage());
         }
     }
 
-    private void sendEMessage(String responseUrl, Exception ex) {
-        LOGGER.warn("There was an exceptional situation: [{}]", ex.getMessage());
+    private void sendExceptionMessage(String responseUrl, Exception ex) {
+        logger.warn("There was an exceptional situation: [{}]", ex.getMessage());
         try {
             String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(ex.getMessage()), String.class);
-            LOGGER.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
+            logger.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
         } catch (Exception e) {
-            LOGGER.warn("Nested exception: [{}]", e.getMessage());
+            logger.warn("Nested exception: [{}]", e.getMessage());
         }
     }
 }

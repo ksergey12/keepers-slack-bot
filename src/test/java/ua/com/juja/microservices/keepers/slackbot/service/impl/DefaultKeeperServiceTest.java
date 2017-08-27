@@ -69,21 +69,21 @@ public class DefaultKeeperServiceTest {
     }
 
     @Test
-    public void shouldDismissKeeperAndReturnValidText() {
+    public void shouldDeactivateKeeperAndReturnValidText() {
         //given
         String[] expectedKeeperId = {"100"};
         final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teams";
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
-        when(keeperRepository.dismissKeeper(keeperRequest)).thenReturn(expectedKeeperId);
+        when(keeperRepository.deactivateKeeper(keeperRequest)).thenReturn(expectedKeeperId);
         when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT))
                 .thenReturn(new SlackParsedCommand(fromUser, KEEPER_DISMISS_COMMAND_TEXT, usersInText));
 
         //when
-        String result = keeperService.sendKeeperDismissRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
+        String result = keeperService.sendKeeperDeactivateRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
 
         //then
-        assertEquals("Keeper: @slack_name in direction: teams dismissed", result);
-        verify(keeperRepository).dismissKeeper(keeperRequest);
+        assertEquals("Keeper: @slack_name in direction: teams deactivated", result);
+        verify(keeperRepository).deactivateKeeper(keeperRequest);
         verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT);
     }
 

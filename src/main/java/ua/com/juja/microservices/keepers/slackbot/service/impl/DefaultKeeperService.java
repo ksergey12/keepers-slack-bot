@@ -55,7 +55,7 @@ public class DefaultKeeperService implements KeeperService {
     }
 
     @Override
-    public String sendKeeperDismissRequest(String fromUser, String text) {
+    public String sendKeeperDeactivateRequest(String fromUser, String text) {
         logger.debug("Started create slackParsedCommand and create keeper request");
         SlackParsedCommand slackParsedCommand = slackNameHandlerService.createSlackParsedCommand(fromUser, text);
         KeeperRequest keeperRequest = new KeeperRequest(slackParsedCommand.getFromUser().getUuid(),
@@ -63,16 +63,16 @@ public class DefaultKeeperService implements KeeperService {
                                                         receiveToDirections(slackParsedCommand));
 
         logger.debug("Received KeeperRequest: [{}]", keeperRequest.toString());
-        String[] ids = keeperRepository.dismissKeeper(keeperRequest);
-        logger.info("Dismissed Keeper: [{}]", Arrays.toString(ids));
+        String[] ids = keeperRepository.deactivateKeeper(keeperRequest);
+        logger.info("Deactivated Keeper: [{}]", Arrays.toString(ids));
 
         String result;
 
         if (ids.length > 0) {
-            result = String.format("Keeper: %s in direction: %s dismissed",
+            result = String.format("Keeper: %s in direction: %s deactivated",
                     slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
         } else {
-            result = "ERROR. Something went wrong. Keeper was not dismissed :(";
+            result = "ERROR. Something went wrong. Keeper was not deactivated :(";
         }
         return result;
     }

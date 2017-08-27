@@ -107,13 +107,13 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashCommandKeeperDismissIncorrectTokenShouldSendSorryRichMessage() throws Exception {
+    public void onReceiveSlashCommandKeeperDeactivateIncorrectTokenShouldSendSorryRichMessage() throws Exception {
         // given
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teams";
+        final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack_name teams";
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
-                SlackUrlUtils.getUriVars(TOKEN_WRONG, "/command", KEEPER_DISMISS_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
+                SlackUrlUtils.getUriVars(TOKEN_WRONG, "/command", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(SORRY_MESSAGE));
@@ -122,45 +122,45 @@ public class KeepersSlackCommandControllerTest {
     }
 
     @Test
-    public void onReceiveSlashKeeperDismissSendOkRichMessage() throws Exception {
+    public void onReceiveSlashKeeperDeactivateSendOkRichMessage() throws Exception {
         // given
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
+        final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack1 teams";
         final String KEEPER_RESPONSE = "Keeper: @slack1 in direction: teams dismissed";
 
         // when
-        when(keeperService.sendKeeperDismissRequest("@from-user", KEEPER_DISMISS_COMMAND_TEXT))
+        when(keeperService.sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .thenReturn(KEEPER_RESPONSE);
         when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
+                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
 
-        verify(keeperService).sendKeeperDismissRequest("@from-user", KEEPER_DISMISS_COMMAND_TEXT);
+        verify(keeperService).sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT);
         verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(KEEPER_RESPONSE), String.class);
         verifyNoMoreInteractions(keeperService, restTemplate);
     }
 
     @Test
-    public void onReceiveSlashKeeperDismissShouldSendExceptionMessage() throws Exception {
+    public void onReceiveSlashKeeperDeactivateShouldSendExceptionMessage() throws Exception {
         // given
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack1 teams";
+        final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack1 teams";
 
         // when
-        when(keeperService.sendKeeperDismissRequest(any(String.class), any(String.class)))
+        when(keeperService.sendKeeperDeactivateRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException(ERROR_MESSAGE));
         when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/dismiss"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-dismiss", KEEPER_DISMISS_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
+                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
 
-        verify(keeperService).sendKeeperDismissRequest("@from-user", KEEPER_DISMISS_COMMAND_TEXT);
+        verify(keeperService).sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT);
         verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(ERROR_MESSAGE), String.class);
         verifyNoMoreInteractions(keeperService, restTemplate);
     }
