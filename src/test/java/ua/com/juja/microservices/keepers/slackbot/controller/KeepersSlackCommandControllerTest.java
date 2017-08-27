@@ -1,7 +1,9 @@
 package ua.com.juja.microservices.keepers.slackbot.controller;
 
+import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -9,17 +11,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
-import ua.com.juja.microservices.keepers.slackbot.model.dto.CustomRichMessage;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 import ua.com.juja.microservices.utils.SlackUrlUtils;
 
 import javax.inject.Inject;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Nikolay Horushko
@@ -66,11 +69,12 @@ public class KeepersSlackCommandControllerTest {
         // given
         final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
         final String KEEPER_RESPONSE = "Thanks, we added a new Keeper: @slack1 in direction: teams";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.sendKeeperAddRequest("@from-user", KEEPER_ADD_COMMAND_TEXT))
                 .thenReturn(KEEPER_RESPONSE);
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
@@ -80,19 +84,22 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).sendKeeperAddRequest("@from-user", KEEPER_ADD_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(KEEPER_RESPONSE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(KEEPER_RESPONSE));
     }
 
     @Test
     public void onReceiveSlashKeeperAddShouldSendExceptionMessage() throws Exception {
         // given
         final String KEEPER_ADD_COMMAND_TEXT = "@slack1 teams";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.sendKeeperAddRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException(ERROR_MESSAGE));
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
@@ -102,8 +109,10 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).sendKeeperAddRequest("@from-user", KEEPER_ADD_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(ERROR_MESSAGE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(ERROR_MESSAGE));
     }
 
     @Test
@@ -126,11 +135,12 @@ public class KeepersSlackCommandControllerTest {
         // given
         final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack1 teams";
         final String KEEPER_RESPONSE = "Keeper: @slack1 in direction: teams dismissed";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .thenReturn(KEEPER_RESPONSE);
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
                 SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
@@ -139,19 +149,22 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(KEEPER_RESPONSE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(KEEPER_RESPONSE));
     }
 
     @Test
     public void onReceiveSlashKeeperDeactivateShouldSendExceptionMessage() throws Exception {
         // given
         final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack1 teams";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.sendKeeperDeactivateRequest(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException(ERROR_MESSAGE));
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
@@ -161,8 +174,10 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).sendKeeperDeactivateRequest("@from-user", KEEPER_DEACTIVATE_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(ERROR_MESSAGE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(ERROR_MESSAGE));
     }
 
     @Test
@@ -185,11 +200,12 @@ public class KeepersSlackCommandControllerTest {
         // given
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
         final String KEEPER_RESPONSE = "The keeper @slack1 has active directions: [direction1, direction2]";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.getKeeperDirections("@from-user", GET_DIRECTIONS_COMMAND_TEXT))
                 .thenReturn(KEEPER_RESPONSE);
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
@@ -199,19 +215,22 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).getKeeperDirections("@from-user", GET_DIRECTIONS_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(KEEPER_RESPONSE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(KEEPER_RESPONSE));
     }
 
     @Test
     public void onReceiveSlashGetKeeperDirectionsShouldSendExceptionMessage() throws Exception {
         // given
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack1";
+        ArgumentCaptor<RichMessage> richMessageCaptor = ArgumentCaptor.forClass(RichMessage.class);
 
         // when
         when(keeperService.getKeeperDirections(any(String.class), any(String.class)))
                 .thenThrow(new RuntimeException(ERROR_MESSAGE));
-        when(restTemplate.postForObject(anyString(), any(CustomRichMessage.class), anyObject())).thenReturn("[OK]");
+        when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
         mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
@@ -221,7 +240,9 @@ public class KeepersSlackCommandControllerTest {
                 .andExpect(content().string(IN_PROGRESS));
 
         verify(keeperService).getKeeperDirections("@from-user", GET_DIRECTIONS_COMMAND_TEXT);
-        verify(restTemplate).postForObject(EXAMPLE_URL, new CustomRichMessage(ERROR_MESSAGE), String.class);
+        verify(restTemplate).postForObject(eq(EXAMPLE_URL), richMessageCaptor.capture(), eq(String.class));
         verifyNoMoreInteractions(keeperService, restTemplate);
+
+        assertTrue(richMessageCaptor.getValue().getText().contains(ERROR_MESSAGE));
     }
 }

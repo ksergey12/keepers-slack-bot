@@ -1,5 +1,6 @@
 package ua.com.juja.microservices.keepers.slackbot.controller;
 
+import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import ua.com.juja.microservices.keepers.slackbot.exception.BaseBotException;
-import ua.com.juja.microservices.keepers.slackbot.model.dto.CustomRichMessage;
 import ua.com.juja.microservices.keepers.slackbot.service.KeeperService;
 
 import javax.inject.Inject;
@@ -28,8 +28,8 @@ import java.io.PrintWriter;
 public class KeepersSlackCommandController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final String SORRY_MESSAGE = "Sorry! You're not lucky enough to use our slack command.";
-    private final String IN_PROGRESS = "In progress...";
+    private static final String SORRY_MESSAGE = "Sorry! You're not lucky enough to use our slack command.";
+    private static final String IN_PROGRESS = "In progress...";
 
     @Value("${slack.slashCommandToken}")
     private String slackToken;
@@ -135,14 +135,14 @@ public class KeepersSlackCommandController {
     }
 
     private void sendDelayedResponse(String responseUrl, String response) {
-        String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(response), String.class);
+        String slackAnswer = restTemplate.postForObject(responseUrl, new RichMessage(response), String.class);
         logger.info("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
     }
 
     private void sendBaseBotExceptionMessage(String responseUrl, BaseBotException bex) {
         logger.warn("There was an exceptional situation: [{}]", bex.detailMessage());
         try {
-            String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(bex.getMessage()), String.class);
+            String slackAnswer = restTemplate.postForObject(responseUrl, new RichMessage(bex.getMessage()), String.class);
             logger.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
         } catch (Exception e){
             logger.warn("Nested exception: [{}]", e.getMessage());
@@ -152,7 +152,7 @@ public class KeepersSlackCommandController {
     private void sendExceptionMessage(String responseUrl, Exception ex) {
         logger.warn("There was an exceptional situation: [{}]", ex.getMessage());
         try {
-            String slackAnswer = restTemplate.postForObject(responseUrl, new CustomRichMessage(ex.getMessage()), String.class);
+            String slackAnswer = restTemplate.postForObject(responseUrl, new RichMessage(ex.getMessage()), String.class);
             logger.warn("Slack answered: [{}]", slackAnswer == null ? "null" : slackAnswer);
         } catch (Exception e) {
             logger.warn("Nested exception: [{}]", e.getMessage());
