@@ -141,7 +141,7 @@ public class RestKeeperRepositoryTest {
         //given
         String expectedRequestBody = "{\"from\":\"fromUser\",\"uuid\":\"0000-1111\",\"direction\":\"direction1\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + "/0000-1111"))
+        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers + "/0000-1111"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
