@@ -69,22 +69,60 @@ public class DefaultKeeperServiceTest {
     }
 
     @Test
+    public void keeperAddShouldReturnERRORText() {
+        //given
+        String[] expectedEmptyArray = {};
+        final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
+        when(keeperRepository.addKeeper(keeperRequest)).thenReturn(expectedEmptyArray);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_ADD_COMMAND_TEXT, usersInText));
+
+        //when
+        String result = keeperService.sendKeeperAddRequest("@from", KEEPER_ADD_COMMAND_TEXT);
+
+        //then
+        assertEquals("ERROR. Something went wrong. Keeper was not added :(", result);
+        verify(keeperRepository).addKeeper(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_ADD_COMMAND_TEXT);
+    }
+
+    @Test
     public void shouldDeactivateKeeperAndReturnValidText() {
         //given
         String[] expectedKeeperId = {"100"};
-        final String KEEPER_DISMISS_COMMAND_TEXT = "@slack_name teams";
+        final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack_name teams";
         KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
         when(keeperRepository.deactivateKeeper(keeperRequest)).thenReturn(expectedKeeperId);
-        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT))
-                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_DISMISS_COMMAND_TEXT, usersInText));
+        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DEACTIVATE_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_DEACTIVATE_COMMAND_TEXT, usersInText));
 
         //when
-        String result = keeperService.sendKeeperDeactivateRequest("@from", KEEPER_DISMISS_COMMAND_TEXT);
+        String result = keeperService.sendKeeperDeactivateRequest("@from", KEEPER_DEACTIVATE_COMMAND_TEXT);
 
         //then
         assertEquals("Keeper: @slack_name in direction: teams deactivated", result);
         verify(keeperRepository).deactivateKeeper(keeperRequest);
-        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DISMISS_COMMAND_TEXT);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DEACTIVATE_COMMAND_TEXT);
+    }
+
+    @Test
+    public void keeperDeactivateShouldReturnERRORText() {
+        //given
+        String[] expectedEmptyArray = {};
+        final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack_name teams";
+        KeeperRequest keeperRequest = new KeeperRequest("uuid0", "uuid1", "teams");
+        when(keeperRepository.deactivateKeeper(keeperRequest)).thenReturn(expectedEmptyArray);
+        when(slackNameHandlerService.createSlackParsedCommand("@from", KEEPER_DEACTIVATE_COMMAND_TEXT))
+                .thenReturn(new SlackParsedCommand(fromUser, KEEPER_DEACTIVATE_COMMAND_TEXT, usersInText));
+
+        //when
+        String result = keeperService.sendKeeperDeactivateRequest("@from", KEEPER_DEACTIVATE_COMMAND_TEXT);
+
+        //then
+        assertEquals("ERROR. Something went wrong. Keeper was not deactivated :(", result);
+        verify(keeperRepository).deactivateKeeper(keeperRequest);
+        verify(slackNameHandlerService).createSlackParsedCommand("@from", KEEPER_DEACTIVATE_COMMAND_TEXT);
     }
 
     @Test

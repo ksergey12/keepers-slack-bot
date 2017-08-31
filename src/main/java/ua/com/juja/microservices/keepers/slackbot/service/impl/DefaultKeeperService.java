@@ -49,7 +49,7 @@ public class DefaultKeeperService implements KeeperService {
             result = String.format("Thanks, we added a new Keeper: %s in direction: %s",
                     slackParsedCommand.getFirstUserFromText().getSlack(), keeperRequest.getDirection());
         } else {
-            result = "ERROR. Something went wrong. Keeper was not dismissed :(";
+            result = "ERROR. Something went wrong. Keeper was not added :(";
         }
         return result;
     }
@@ -92,12 +92,10 @@ public class DefaultKeeperService implements KeeperService {
         String result;
         String keeperSlackName = slackParsedCommand.getFirstUserFromText().getSlack();
 
-        if (directions.length == 0) {
-            result = "The keeper " + keeperSlackName + " has no active directions.";
-        } else if (directions.length > 0) {
+        if (directions.length > 0) {
             result = "The keeper " + keeperSlackName + " has active directions: " + Arrays.toString(directions);
         } else {
-            result = "ERROR. Something went wrong and we didn't get keeper directions";
+            result = "The keeper " + keeperSlackName + " has no active directions.";
         }
         return result;
     }

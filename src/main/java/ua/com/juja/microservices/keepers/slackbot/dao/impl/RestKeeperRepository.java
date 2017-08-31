@@ -50,7 +50,7 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Override
     public String[] getKeeperDirections(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest,urlBaseKeeper + "/" + keeperRequest.getUuid(), HttpMethod.GET);
+        return getCommonResponse(keeperRequest,urlBaseKeeper + urlKeepers + "/" + keeperRequest.getUuid(), HttpMethod.GET);
     }
 
     private String[] getCommonResponse(KeeperRequest keeperRequest, String url, HttpMethod method) {
