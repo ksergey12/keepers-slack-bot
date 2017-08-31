@@ -45,9 +45,10 @@ public class RestKeeperRepositoryTest {
     private MockRestServiceServer mockServer;
 
     @Value("${keepers.baseURL}")
-    private String urlBaseKeeper;
-
-    @Value("${endpoint.keepers}")
+    private String urlBaseKeepers;
+    @Value("${keepers.rest.api.version}")
+    private String version;
+    @Value("${keepers.endpoint.keepers}")
     private String urlKeepers;
 
     @Rule
@@ -63,7 +64,7 @@ public class RestKeeperRepositoryTest {
         //given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers))
+        mockServer.expect(requestTo(urlBaseKeepers + version + urlKeepers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
@@ -82,7 +83,7 @@ public class RestKeeperRepositoryTest {
         // given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers))
+        mockServer.expect(requestTo(urlBaseKeepers + version + urlKeepers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
@@ -102,7 +103,7 @@ public class RestKeeperRepositoryTest {
         //given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers))
+        mockServer.expect(requestTo(urlBaseKeepers + version + urlKeepers))
                 .andExpect(method(HttpMethod.PUT))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
@@ -121,7 +122,7 @@ public class RestKeeperRepositoryTest {
         // given
         String expectedRequestBody = "{\"from\":\"qwer\",\"uuid\":\"67ui\",\"direction\":\"teams\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers))
+        mockServer.expect(requestTo(urlBaseKeepers + version + urlKeepers))
                 .andExpect(method(HttpMethod.PUT))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))
@@ -141,7 +142,7 @@ public class RestKeeperRepositoryTest {
         //given
         String expectedRequestBody = "{\"from\":\"fromUser\",\"uuid\":\"0000-1111\",\"direction\":\"direction1\"}";
         String expectedRequestHeader = "application/json";
-        mockServer.expect(requestTo(urlBaseKeeper + urlKeepers + "/0000-1111"))
+        mockServer.expect(requestTo(urlBaseKeepers + version + urlKeepers + "/0000-1111"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(request -> assertThat(request.getHeaders().getContentType().toString(), containsString(expectedRequestHeader)))
                 .andExpect(request -> assertThat(request.getBody().toString(), equalTo(expectedRequestBody)))

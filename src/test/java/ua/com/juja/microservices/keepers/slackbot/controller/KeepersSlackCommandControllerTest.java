@@ -4,6 +4,7 @@ import me.ramswaroop.jbot.core.slack.models.RichMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -37,8 +38,11 @@ public class KeepersSlackCommandControllerTest {
     private static final String IN_PROGRESS = "In progress...";
     private static final String EXAMPLE_URL = "http://example.com";
     private static final String ERROR_MESSAGE = "Something went wrong!";
-    private static final String TOKEN_CORRECT = "slashCommandToken";
     private static final String TOKEN_WRONG = "wrongSlackToken";
+    @Value("${keepers.slackBot.slack.slashCommandToken}")
+    private String tokenCorrect;
+    @Value("${keepers.slackBot.rest.api.version}")
+    private String version;
 
     @Inject
     private MockMvc mvc;
@@ -55,7 +59,7 @@ public class KeepersSlackCommandControllerTest {
         final String KEEPER_ADD_COMMAND_TEXT = "@slack_name teams";
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/add"),
                 SlackUrlUtils.getUriVars(TOKEN_WRONG, "/command", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
@@ -77,8 +81,8 @@ public class KeepersSlackCommandControllerTest {
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/add"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
@@ -102,8 +106,8 @@ public class KeepersSlackCommandControllerTest {
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/add"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/add"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper-add", KEEPER_ADD_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
@@ -121,7 +125,7 @@ public class KeepersSlackCommandControllerTest {
         final String KEEPER_DEACTIVATE_COMMAND_TEXT = "@slack_name teams";
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/deactivate"),
                 SlackUrlUtils.getUriVars(TOKEN_WRONG, "/command", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
@@ -142,8 +146,8 @@ public class KeepersSlackCommandControllerTest {
                 .thenReturn(KEEPER_RESPONSE);
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/deactivate"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
@@ -167,8 +171,8 @@ public class KeepersSlackCommandControllerTest {
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper/deactivate"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper/deactivate"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper-deactivate", KEEPER_DEACTIVATE_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
@@ -186,7 +190,7 @@ public class KeepersSlackCommandControllerTest {
         final String GET_DIRECTIONS_COMMAND_TEXT = "@slack_name";
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper"),
                 SlackUrlUtils.getUriVars(TOKEN_WRONG, "/command", GET_DIRECTIONS_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
@@ -208,8 +212,8 @@ public class KeepersSlackCommandControllerTest {
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));
@@ -233,8 +237,8 @@ public class KeepersSlackCommandControllerTest {
         when(restTemplate.postForObject(anyString(), any(RichMessage.class), anyObject())).thenReturn("[OK]");
 
         // then
-        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate("/commands/keeper"),
-                SlackUrlUtils.getUriVars(TOKEN_CORRECT, "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
+        mvc.perform(MockMvcRequestBuilders.post(SlackUrlUtils.getUrlTemplate(version + "/commands/keeper"),
+                SlackUrlUtils.getUriVars(tokenCorrect, "/keeper/AAA111", GET_DIRECTIONS_COMMAND_TEXT))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(content().string(IN_PROGRESS));

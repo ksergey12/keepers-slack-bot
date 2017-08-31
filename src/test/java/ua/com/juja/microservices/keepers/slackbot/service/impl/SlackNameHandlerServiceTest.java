@@ -48,8 +48,8 @@ public class SlackNameHandlerServiceTest {
     public void getSlackParsedCommandOneSlackInText() throws Exception {
         //given
         String text = "text " + user1.getSlack() + " TexT text.";
-        List<String> requestToUserService = Arrays.asList(new String[]{user1.getSlack(), userFrom.getSlack()});
-        List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom, user1});
+        List<String> requestToUserService = Arrays.asList(user1.getSlack(), userFrom.getSlack());
+        List<UserDTO> responseFromUserService = Arrays.asList(userFrom, user1);
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
         SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, Collections.singletonList(user1));
         //when
@@ -62,8 +62,8 @@ public class SlackNameHandlerServiceTest {
     public void getSlackParsedCommandTwoSlackInText() throws Exception {
         //given
         String text = "text " + user1.getSlack() + " TexT " + user2.getSlack() + " text.";
-        List<String> requestToUserService = Arrays.asList(new String[]{user1.getSlack(), user2.getSlack(), userFrom.getSlack()});
-        List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom, user1, user2});
+        List<String> requestToUserService = Arrays.asList(user1.getSlack(), user2.getSlack(), userFrom.getSlack());
+        List<UserDTO> responseFromUserService = Arrays.asList(userFrom, user1, user2);
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
         SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, Arrays.asList(user1, user2));
         //when
@@ -76,8 +76,8 @@ public class SlackNameHandlerServiceTest {
     public void getSlackParsedCommandWithoutSlackInText() throws Exception {
         //given
         String text = "text without slack name TexT text.";
-        List<String> requestToUserService = Arrays.asList(new String[]{userFrom.getSlack()});
-        List<UserDTO> responseFromUserService = Arrays.asList(new UserDTO[]{userFrom});
+        List<String> requestToUserService = Arrays.asList(userFrom.getSlack());
+        List<UserDTO> responseFromUserService = Arrays.asList(userFrom);
         when(userService.findUsersBySlackNames(requestToUserService)).thenReturn(responseFromUserService);
         SlackParsedCommand expected = new SlackParsedCommand(userFrom, text, new ArrayList<>());
         //when

@@ -29,8 +29,9 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Value("${keepers.baseURL}")
     private String urlBaseKeeper;
-
-    @Value("${endpoint.keepers}")
+    @Value("${keepers.rest.api.version}")
+    private String version;
+    @Value("${keepers.endpoint.keepers}")
     private String urlKeepers;
 
     @Inject
@@ -40,17 +41,18 @@ public class RestKeeperRepository extends AbstractRestRepository implements Keep
 
     @Override
     public String[] addKeeper(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest, urlBaseKeeper + urlKeepers, HttpMethod.POST);
+        return getCommonResponse(keeperRequest, urlBaseKeeper + version + urlKeepers, HttpMethod.POST);
     }
 
     @Override
     public String[] deactivateKeeper(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest, urlBaseKeeper + urlKeepers, HttpMethod.PUT);
+        return getCommonResponse(keeperRequest, urlBaseKeeper + version + urlKeepers, HttpMethod.PUT);
     }
 
     @Override
     public String[] getKeeperDirections(KeeperRequest keeperRequest) {
-        return getCommonResponse(keeperRequest,urlBaseKeeper + urlKeepers + "/" + keeperRequest.getUuid(), HttpMethod.GET);
+        return getCommonResponse(keeperRequest,urlBaseKeeper +  version + urlKeepers + "/" +
+                keeperRequest.getUuid(), HttpMethod.GET);
     }
 
     private String[] getCommonResponse(KeeperRequest keeperRequest, String url, HttpMethod method) {

@@ -41,10 +41,11 @@ public class RestUserRepositoryTest {
 
     private MockRestServiceServer mockServer;
 
-    @Value("${user.baseURL}")
-    private String urlBase;
-
-    @Value("${endpoint.usersBySlackNames}")
+    @Value("${users.baseURL}")
+    private String urlBaseUsers;
+    @Value("${users.rest.api.version}")
+    private String version;
+    @Value("${users.endpoint.usersBySlackNames}")
     private String urlGetUsers;
 
     @Rule
@@ -61,7 +62,7 @@ public class RestUserRepositoryTest {
         List<String> slackNames = new ArrayList<>();
         slackNames.add("@bob.slack");
         slackNames.add("@john.slack");
-        mockServer.expect(requestTo(urlBase + urlGetUsers))
+        mockServer.expect(requestTo(urlBaseUsers + version + urlGetUsers))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(content().string("{\"slackNames\":[\"@bob.slack\",\"@john.slack\"]}"))

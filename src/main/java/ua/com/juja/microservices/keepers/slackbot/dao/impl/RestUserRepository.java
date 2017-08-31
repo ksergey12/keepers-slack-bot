@@ -1,6 +1,5 @@
 package ua.com.juja.microservices.keepers.slackbot.dao.impl;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +21,7 @@ import java.util.List;
 
 /**
  * @author Nikolay Horushko
+ * @author Dmitriy Lyashenko
  */
 @Repository
 public class RestUserRepository extends AbstractRestRepository implements UserRepository {
@@ -29,9 +29,11 @@ public class RestUserRepository extends AbstractRestRepository implements UserRe
     private final RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${user.baseURL}")
+    @Value("${users.baseURL}")
     private String urlBase;
-    @Value("${endpoint.usersBySlackNames}")
+    @Value("${users.rest.api.version}")
+    private String version;
+    @Value("${users.endpoint.usersBySlackNames}")
     private String urlGetUsers;
 
     @Inject
@@ -57,7 +59,7 @@ public class RestUserRepository extends AbstractRestRepository implements UserRe
         List<UserDTO> result;
         try {
             logger.debug("Started request to Users service. Request is : [{}]", request.toString());
-            ResponseEntity<UserDTO[]> response = restTemplate.exchange(urlBase + urlGetUsers,
+            ResponseEntity<UserDTO[]> response = restTemplate.exchange(urlBase + version + urlGetUsers,
                     HttpMethod.POST, request, UserDTO[].class);
             logger.debug("Finished request to Users service. Response is: [{}]", response.toString());
             result = Arrays.asList(response.getBody());
