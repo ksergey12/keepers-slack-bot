@@ -24,14 +24,14 @@ import java.io.PrintWriter;
  * @author Konstantin Sergey
  */
 @RestController
-@RequestMapping("/commands/keeper")
+@RequestMapping(value = "${keepers.slackBot.rest.api.version}" + "${keepers.slackBot.baseCommandsUrl}")
 public class KeepersSlackCommandController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String SORRY_MESSAGE = "Sorry! You're not lucky enough to use our slack command.";
     private static final String IN_PROGRESS = "In progress...";
 
-    @Value("${slack.slashCommandToken}")
+    @Value("${keepers.slackBot.slack.slashCommandToken}")
     private String slackToken;
 
     private KeeperService keeperService;
@@ -44,7 +44,7 @@ public class KeepersSlackCommandController {
         this.restTemplate = restTemplate;
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "${keepers.slackBot.endpoint.keeperAdd}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public void addKeeper(@RequestParam("token") String token,
                          @RequestParam("user_name") String fromUser,
                          @RequestParam("text") String text,
@@ -71,7 +71,7 @@ public class KeepersSlackCommandController {
         }
     }
 
-    @PostMapping(value = "/deactivate", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "${keepers.slackBot.endpoint.keeperDeactivate}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public void deactivateKeeper(@RequestParam("token") String token,
                                  @RequestParam("user_name") String fromUser,
                                  @RequestParam("text") String text,
