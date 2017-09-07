@@ -1,6 +1,8 @@
 package ua.com.juja.microservices.keepers.slackbot.model;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +10,9 @@ import ua.com.juja.microservices.keepers.slackbot.exception.WrongCommandFormatEx
 import ua.com.juja.microservices.keepers.slackbot.model.dto.UserDTO;
 import ua.com.juja.microservices.keepers.slackbot.utils.Utils;
 
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Konstantin Sergey
@@ -64,5 +68,70 @@ public class SlackParsedCommand {
 
     public int getUserCountInText() {
         return usersInText.size();
+    }
+
+    public Map<String, UserDTO> getUsersWithTokens(String[] tokens) {
+        logger.debug("Recieve tokens: [{}] for searching. in the text: [{}]", tokens, text);
+        List<Token> sortedTokenList = receiveTokensWithPositionInText(tokens);
+        Map<String, UserDTO> result = new HashMap<>();
+        for (int i = 0; i < sortedTokenList.size(); i++) {
+            Token currentToken = sortedTokenList.get(i);
+            Pattern pattern = Pattern.compile(slackNamePattern);
+            Matcher matcher = pattern.matcher(text.substring(text.indexOf(currentToken.getToken())));
+            if (matcher.find()) {
+                String foundedSlackName = matcher.group().trim();
+                int indexFoundedSlackName = text.indexOf(foundedSlackName);
+                for (int j = i + 1; j < sortedTokenList.size(); j++) {
+                    if (indexFoundedSlackName > sortedTokenList.get(j).getPositionInText()) {
+                        logger.warn("The text: [{}] doesn't contain slack name for token: [{}]",
+                                text, currentToken.getToken());
+                        throw new WrongCommandFormatException(String.format("The text '%s' doesn't contain slackName " +
+                                "for token '%s'", text, currentToken.getToken()));
+                    }
+                }
+                for (UserDTO item : usersInText) {
+                    if (item.getSlack().equals(foundedSlackName)) {
+                        logger.debug("Found user: {} for token:", item, currentToken.getToken());
+                        result.put(currentToken.getToken(), item);
+                    }
+                }
+            } else {
+                logger.warn("The text: [{}] doesn't contain slack name for token: [{}]",
+                        text, sortedTokenList.get(i).getToken());
+                throw new WrongCommandFormatException(String.format("The text '%s' " +
+                        "doesn't contain slackName for token '%s'", text, sortedTokenList.get(i).getToken()));
+            }
+        }
+        return result;
+    }
+
+    private List<Token> receiveTokensWithPositionInText(String[] tokens) {
+        Set<Token> result = new TreeSet<>();
+        for (String token : tokens) {
+            if (!text.contains(token)) {
+                throw new WrongCommandFormatException(String.format("Token '%s' didn't find in the string '%s'",
+                        token, text));
+            }
+            int tokenCounts = text.split(token).length - 1;
+            if (tokenCounts > 1) {
+                throw new WrongCommandFormatException(String.format("The text '%s' contains %d tokens '%s', " +
+                        "but expected 1", text, tokenCounts, token));
+            }
+            result.add(new Token(token, text.indexOf(token)));
+        }
+        return new ArrayList<>(result);
+    }
+
+    @AllArgsConstructor
+    @Getter
+    class Token implements Comparable {
+        private String token;
+        private int positionInText;
+
+        @Override
+        public int compareTo(Object object) {
+            Token thatToken = (Token) object;
+            return positionInText - thatToken.getPositionInText();
+        }
     }
 }
